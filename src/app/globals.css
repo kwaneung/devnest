@@ -1,10 +1,6 @@
 @import 'tailwindcss';
 @import 'pretendard/dist/web/static/pretendard.css';
-@plugin "daisyui" {
-  themes:
-    light --default,
-    dark --prefersdark;
-}
+@import '../styles/modern-theme.css';
 
 @theme inline {
   --font-sans:
