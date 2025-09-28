@@ -18,6 +18,7 @@ description: DevNest 프로젝트 전체 개요 및 기술 스택
 - **언어**: TypeScript 5.x
 - **UI 라이브러리**: React 19.1.0
 - **스타일링**: Tailwind CSS 4.x
+- **디자인 시스템**: daisyUI 4.x (Tailwind CSS 컴포넌트 라이브러리)
 - **폰트**: Pretendard (한글 최적화 폰트)
 
 ## 개발 도구

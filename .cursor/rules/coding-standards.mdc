@@ -18,6 +18,7 @@ description: TypeScript/React 코딩 표준 및 규칙
 - **JSX Runtime**: React 17+ 자동 JSX 변환 사용
 - **Props 타입**: TypeScript 인터페이스로 정의
 - **이벤트 핸들러**: 화살표 함수 또는 useCallback 사용
+- **UI 컴포넌트**: daisyUI 클래스 우선 사용, 커스텀 스타일은 Tailwind 유틸리티 클래스 활용
 
 ## ESLint 규칙 (주요)
 
@@ -42,3 +43,10 @@ description: TypeScript/React 코딩 표준 및 규칙
 - **타입 별칭**: PascalCase (예: `ApiResponse`)
 - **함수/변수**: camelCase (예: `getUserData`)
 - **상수**: UPPER_SNAKE_CASE (예: `API_BASE_URL`)
+
+## daisyUI 사용 규칙
+
+- **컴포넌트 클래스**: daisyUI 제공 클래스 우선 사용 (예: `btn`, `card`, `modal`)
+- **테마**: daisyUI 테마 시스템 활용 (예: `data-theme="dark"`)
+- **커스터마이징**: Tailwind 유틸리티 클래스로 daisyUI 컴포넌트 확장
+- **일관성**: 프로젝트 전체에서 동일한 daisyUI 컴포넌트 패턴 유지

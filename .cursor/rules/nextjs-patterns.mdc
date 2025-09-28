@@ -35,9 +35,29 @@ export const metadata: Metadata = {
 ## 스타일링 가이드
 
 - **CSS 클래스**: Tailwind CSS 유틸리티 클래스 사용
+- **디자인 시스템**: daisyUI 컴포넌트 클래스 우선 사용
 - **반응형**: `sm:`, `md:`, `lg:`, `xl:` 접두사 활용
 - **다크모드**: `dark:` 접두사로 다크모드 스타일 정의
 - **커스텀 스타일**: `globals.css`에서 CSS 변수 정의
+
+## daisyUI 컴포넌트 사용
+
+```typescript
+// daisyUI 컴포넌트 예시
+export default function ComponentExample() {
+  return (
+    <div className="card w-96 bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">Card title!</h2>
+        <p>If a dog chews shoes whose shoes does he choose?</p>
+        <div className="card-actions justify-end">
+          <button className="btn btn-primary">Buy Now</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
 
 ## 성능 최적화
 
