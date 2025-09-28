@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run steiger architecture check
+pnpm steiger
+
+# Run lint-staged for code formatting and linting
+npx lint-staged
