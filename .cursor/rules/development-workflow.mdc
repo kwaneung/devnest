@@ -25,6 +25,13 @@ description: 개발 워크플로우 및 도구 설정
 - **FSD 아키텍처 검사**: `pnpm steiger` (FSD 아키텍처 준수 여부 검사)
 - **감시 모드**: `pnpm steiger:watch`
 
+## 반응형 웹 디자인 검증
+
+- **브라우저 테스트**: Chrome, Firefox, Safari, Edge에서 반응형 테스트
+- **디바이스 시뮬레이션**: 개발자 도구의 반응형 모드 활용
+- **브레이크포인트 검증**: 모든 Tailwind 브레이크포인트에서 레이아웃 확인
+- **성능 테스트**: Lighthouse를 통한 모바일 성능 검사
+
 ## Git 워크플로우
 
 - **Git 훅**: Husky 설정

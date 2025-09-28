@@ -40,19 +40,43 @@ export const metadata: Metadata = {
 - **다크모드**: `dark:` 접두사로 다크모드 스타일 정의
 - **커스텀 스타일**: `globals.css`에서 CSS 변수 정의
 
+## 반응형 웹 디자인 필수 규칙
+
+- **모바일 퍼스트**: 모든 컴포넌트는 모바일부터 시작하여 점진적으로 확장
+- **브레이크포인트 준수**: Tailwind CSS 표준 브레이크포인트만 사용
+- **반응형 레이아웃**: 모든 레이아웃 요소에 반응형 클래스 적용 필수
+- **컨테이너 반응형**: `container mx-auto px-4 sm:px-6 lg:px-8` 패턴 사용
+- **그리드 시스템**: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3` 패턴
+- **타이포그래피**: `text-sm md:text-base lg:text-lg xl:text-xl` 반응형 텍스트
+- **간격 조정**: `p-4 md:p-6 lg:p-8` 반응형 패딩/마진
+- **네비게이션**: 모바일에서는 햄버거 메뉴, 데스크톱에서는 전체 메뉴 표시
+- **이미지**: `w-full h-auto` 또는 `object-cover` 클래스로 반응형 이미지
+- **버튼 크기**: `btn btn-sm md:btn-md lg:btn-lg` 반응형 버튼 크기
+
 ## daisyUI 컴포넌트 사용
 
 ```typescript
-// daisyUI 컴포넌트 예시
+// daisyUI 반응형 컴포넌트 예시
 export default function ComponentExample() {
   return (
-    <div className="card w-96 bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Card title!</h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
-        <div className="card-actions justify-end">
-          <button className="btn btn-primary">Buy Now</button>
+    <div className="card w-full max-w-sm md:max-w-md lg:max-w-lg bg-base-100 shadow-xl">
+      <div className="card-body p-4 md:p-6">
+        <h2 className="card-title text-lg md:text-xl lg:text-2xl">Card title!</h2>
+        <p className="text-sm md:text-base">If a dog chews shoes whose shoes does he choose?</p>
+        <div className="card-actions justify-end mt-4">
+          <button className="btn btn-primary btn-sm md:btn-md">Buy Now</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// 반응형 그리드 레이아웃 예시
+export default function GridExample() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        {/* 그리드 아이템들 */}
       </div>
     </div>
   );

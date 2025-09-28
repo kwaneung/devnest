@@ -38,7 +38,7 @@ description: 프로젝트 의존성 및 라이브러리 가이드
 
 ### 스타일링
 
-- **tailwindcss**: ^4 - CSS 프레임워크
+- **tailwindcss**: ^4 - CSS 프레임워크 (반응형 웹 디자인 지원)
 - **@tailwindcss/postcss**: ^4 - PostCSS 플러그인
 - **daisyui**: ^4 - Tailwind CSS 컴포넌트 라이브러리 (디자인 시스템)
 
@@ -56,3 +56,10 @@ description: 프로젝트 의존성 및 라이브러리 가이드
 - **UI 컴포넌트**: daisyUI (기본 디자인 시스템), Headless UI 또는 Radix UI 권장
 - **아이콘**: Lucide React 또는 Heroicons 권장
 - **애니메이션**: Framer Motion 권장
+
+## 반응형 웹 디자인 도구
+
+- **브레이크포인트**: Tailwind CSS 내장 브레이크포인트 활용
+- **개발자 도구**: 브라우저 개발자 도구의 반응형 모드 필수 사용
+- **테스트**: 다양한 디바이스 크기에서 테스트 필수
+- **성능**: 반응형 이미지 최적화 (`next/image` 사용)
