@@ -1,0 +1,53 @@
+---
+globs: src/app/**/*.tsx,src/app/**/*.ts
+description: Next.js App Router 패턴 및 모범 사례
+---
+
+# Next.js App Router 패턴
+
+## 파일 구조 규칙
+
+- **페이지**: `page.tsx` 파일로 생성
+- **레이아웃**: `layout.tsx` 파일로 생성
+- **로딩**: `loading.tsx` 파일로 생성
+- **에러**: `error.tsx` 파일로 생성
+- **메타데이터**: `metadata` 객체 또는 `generateMetadata` 함수
+
+## 컴포넌트 구조
+
+```typescript
+// 페이지 컴포넌트 예시
+export default function PageName() {
+  return (
+    <div>
+      {/* 컴포넌트 내용 */}
+    </div>
+  );
+}
+
+// 메타데이터 설정
+export const metadata: Metadata = {
+  title: '페이지 제목',
+  description: '페이지 설명',
+};
+```
+
+## 스타일링 가이드
+
+- **CSS 클래스**: Tailwind CSS 유틸리티 클래스 사용
+- **반응형**: `sm:`, `md:`, `lg:`, `xl:` 접두사 활용
+- **다크모드**: `dark:` 접두사로 다크모드 스타일 정의
+- **커스텀 스타일**: `globals.css`에서 CSS 변수 정의
+
+## 성능 최적화
+
+- **이미지**: `next/image` 컴포넌트 사용
+- **폰트**: `next/font/google`로 폰트 최적화
+- **동적 Import**: `dynamic()` 함수로 코드 스플리팅
+- **메타데이터**: 정적 메타데이터 우선 사용
+
+## 현재 프로젝트 설정
+
+- **폰트**: Geist Sans, Geist Mono
+- **CSS 변수**: `--font-geist-sans`, `--font-geist-mono`
+- **기본 스타일**: `antialiased` 클래스 적용

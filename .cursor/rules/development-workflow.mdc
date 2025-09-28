@@ -1,0 +1,48 @@
+---
+description: 개발 워크플로우 및 도구 설정
+---
+
+# 개발 워크플로우
+
+## 패키지 관리
+
+- **패키지 매니저**: pnpm 사용
+- **워크스페이스**: pnpm-workspace.yaml 설정
+- **의존성 설치**: `pnpm install`
+- **패키지 추가**: `pnpm add <package>`
+
+## 개발 서버
+
+- **개발 모드**: `pnpm dev` (Turbopack 사용)
+- **빌드**: `pnpm build` (Turbopack 사용)
+- **프로덕션**: `pnpm start`
+- **포트**: 기본 3000번 포트
+
+## 코드 품질 도구
+
+- **린팅**: `pnpm lint` (ESLint 실행)
+- **포맷팅**: Prettier 자동 적용
+- **FSD 아키텍처 검사**: `pnpm steiger` (FSD 아키텍처 준수 여부 검사)
+- **감시 모드**: `pnpm steiger:watch`
+
+## Git 워크플로우
+
+- **Git 훅**: Husky 설정
+- **Pre-commit**: lint-staged로 자동 린팅/포맷팅
+- **브랜치**: main 브랜치 사용
+- **커밋 메시지**: Conventional Commits 스타일
+
+## 현재 Git 히스토리
+
+1. `chore: setup development workflow with husky, lint-staged, and steiger`
+2. `chore: optimize VSCode settings`
+3. `chore: configure ESLint and Prettier setup`
+4. `chore: switch from npm to pnpm`
+5. `Initial commit from Create Next App`
+
+## IDE 설정
+
+- **VSCode**: 최적화된 설정 적용
+- **ESLint**: 실시간 린팅
+- **Prettier**: 자동 포맷팅
+- **TypeScript**: 타입 체크 활성화
