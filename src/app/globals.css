@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'pretendard/dist/web/static/pretendard.css';
+@plugin "daisyui";
 
 :root {
   --background: #ffffff;
