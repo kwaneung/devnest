@@ -2,7 +2,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { useNav } from '@/shared/context';
+
 export default function Sidebar() {
+  const { items } = useNav();
   const pathname = usePathname();
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
@@ -21,36 +24,18 @@ export default function Sidebar() {
       </div>
       <nav className="p-2">
         <ul className="menu">
-          <li>
-            <Link
-              href="/"
-              className={isActive('/') ? 'menu-active' : undefined}
-              aria-current={isActive('/') ? 'page' : undefined}
-              onClick={closeDrawer}
-            >
-              홈
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/design-system"
-              className={isActive('/design-system') ? 'menu-active' : undefined}
-              aria-current={isActive('/design-system') ? 'page' : undefined}
-              onClick={closeDrawer}
-            >
-              디자인 시스템
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/about"
-              className={isActive('/about') ? 'menu-active' : undefined}
-              aria-current={isActive('/about') ? 'page' : undefined}
-              onClick={closeDrawer}
-            >
-              소개
-            </Link>
-          </li>
+          {items.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={isActive(item.href) ? 'menu-active' : undefined}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                onClick={closeDrawer}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </aside>

@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 
+import { useNav } from '@/shared/context';
+
 export default function Header() {
+  const { items } = useNav();
   useEffect(() => {
     // 테마 동기화 함수
     const syncTheme = () => {
@@ -107,15 +110,11 @@ export default function Header() {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal gap-2">
-          <li>
-            <Link href="/">홈</Link>
-          </li>
-          <li>
-            <Link href="/design-system">디자인 시스템</Link>
-          </li>
-          <li>
-            <Link href="/about">소개</Link>
-          </li>
+          {items.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>{item.label}</Link>
+            </li>
+          ))}
         </ul>
       </div>
       <div className="navbar-end gap-2">
