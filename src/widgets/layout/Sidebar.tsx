@@ -8,6 +8,10 @@ export default function Sidebar() {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
+  const closeDrawer = () => {
+    const el = document.getElementById('app-drawer') as HTMLInputElement | null;
+    if (el) el.checked = false;
+  };
   return (
     <aside className="min-h-full w-80 bg-base-100 overflow-y-auto">
       <div className="navbar bg-base-100 border-b border-base-300 p-4">
@@ -22,6 +26,7 @@ export default function Sidebar() {
               href="/"
               className={isActive('/') ? 'menu-active' : undefined}
               aria-current={isActive('/') ? 'page' : undefined}
+              onClick={closeDrawer}
             >
               홈
             </Link>
@@ -31,6 +36,7 @@ export default function Sidebar() {
               href="/design-system"
               className={isActive('/design-system') ? 'menu-active' : undefined}
               aria-current={isActive('/design-system') ? 'page' : undefined}
+              onClick={closeDrawer}
             >
               디자인 시스템
             </Link>
@@ -40,6 +46,7 @@ export default function Sidebar() {
               href="/about"
               className={isActive('/about') ? 'menu-active' : undefined}
               aria-current={isActive('/about') ? 'page' : undefined}
+              onClick={closeDrawer}
             >
               소개
             </Link>
