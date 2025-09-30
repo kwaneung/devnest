@@ -13,7 +13,7 @@ export default function Sidebar() {
     if (el) el.checked = false;
   };
   return (
-    <aside className="min-h-full w-80 bg-base-100 overflow-y-auto">
+    <aside className="min-h-full w-64 md:w-72 lg:w-80 bg-base-100 overflow-y-auto">
       <div className="navbar bg-base-100 border-b border-base-300 p-4">
         <div className="navbar-start">
           <h2 className="text-base font-semibold pl-2">탐색</h2>
