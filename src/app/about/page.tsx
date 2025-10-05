@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: '소개 | DevNest',
@@ -21,9 +22,11 @@ export default function AboutPage() {
               <span className="flex items-center gap-3">
                 <div className="avatar">
                   <div className="ring-primary ring-offset-base-100 size-10 rounded-full ring-2 ring-offset-2">
-                    <img
+                    <Image
                       src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp"
                       alt="김관응"
+                      width={40}
+                      height={40}
                     />
                   </div>
                 </div>
