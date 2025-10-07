@@ -6,8 +6,8 @@ export async function PostListTable() {
   const posts = await getPosts({ sort: 'latest' });
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table table-zebra">
+    <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+      <table className="table">
         <thead>
           <tr>
             <th className="w-12">#</th>
@@ -26,27 +26,41 @@ export async function PostListTable() {
             });
 
             return (
-              <tr key={post.id} className="hover">
-                <td>{index + 1}</td>
+              <tr key={post.id} className="hover:bg-base-200 cursor-pointer">
                 <td>
-                  <Link href={`/posts/${post.id}`} className="link link-hover font-medium">
-                    {post.title}
+                  <Link href={`/posts/${post.id}`} className="block">
+                    {index + 1}
                   </Link>
-                  <p className="text-xs text-base-content/60 mt-1 line-clamp-1 md:hidden">
-                    {post.excerpt}
-                  </p>
+                </td>
+                <td>
+                  <Link href={`/posts/${post.id}`} className="block">
+                    <div className="font-medium">{post.title}</div>
+                    <p className="text-xs text-base-content/60 mt-1 line-clamp-1 md:hidden">
+                      {post.excerpt}
+                    </p>
+                  </Link>
                 </td>
                 <td className="hidden md:table-cell">
-                  <div className="flex flex-wrap gap-1">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="badge badge-sm badge-ghost">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  <Link href={`/posts/${post.id}`} className="block">
+                    <div className="flex flex-wrap gap-1">
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="badge badge-sm badge-ghost">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
                 </td>
-                <td className="hidden sm:table-cell text-sm whitespace-nowrap">{formattedDate}</td>
-                <td className="text-right text-sm">{post.viewCount.toLocaleString()}</td>
+                <td className="hidden sm:table-cell text-sm whitespace-nowrap">
+                  <Link href={`/posts/${post.id}`} className="block">
+                    {formattedDate}
+                  </Link>
+                </td>
+                <td className="text-right text-sm">
+                  <Link href={`/posts/${post.id}`} className="block">
+                    {post.viewCount.toLocaleString()}
+                  </Link>
+                </td>
               </tr>
             );
           })}
