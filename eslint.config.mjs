@@ -5,7 +5,6 @@ import { FlatCompat } from '@eslint/eslintrc';
 // ESLint 플러그인 가져오기
 import tanstackQuery from '@tanstack/eslint-plugin-query';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import eslintPluginImport from 'eslint-plugin-import';
 import jsx_a11y from 'eslint-plugin-jsx-a11y';
 import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
@@ -143,9 +142,6 @@ const eslintConfig = [
 
   // import 정렬 규칙
   {
-    plugins: {
-      import: eslintPluginImport,
-    },
     rules: {
       'import/order': [
         'error',
