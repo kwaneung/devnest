@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { NavContext } from '../context/NavContext';
+import { NavContext } from '../context/nav-context';
 
 export function useNav() {
   const ctx = useContext(NavContext);

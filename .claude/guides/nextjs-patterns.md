@@ -103,36 +103,132 @@ const DynamicComponent = dynamic(() => import('@/components/Heavy'), {
 
 ## 데이터 페칭
 
-### Server Component (기본)
+### 프로젝트 데이터 페칭 전략
+
+**핵심 원칙:**
+- `useSuspenseQuery`/`useSuspenseQueries` 위주 사용
+- `useQuery`/`useQueries`는 지양
+- Suspense + Error Boundary로 로딩/에러 처리
+
+**데이터 흐름:**
+```
+useSuspenseQuery → fetcher 함수 → Next.js API Route
+```
+
+### 1. API Route (Mock 데이터)
+
 ```typescript
-async function getData() {
-  const res = await fetch('https://api.example.com/data', {
-    next: { revalidate: 3600 }, // ISR
-  });
-  return res.json();
+// app/api/posts/route.ts
+import { NextResponse } from 'next/server';
+
+export interface Post {
+  id: number;
+  title: string;
+  content: string;
 }
 
-export default async function Page() {
-  const data = await getData();
-  return <div>{data.title}</div>;
+export async function GET() {
+  // DB 연결 전 Mock 데이터 사용
+  const mockData: Post[] = [
+    { id: 1, title: 'Post 1', content: 'Content 1' },
+  ];
+
+  return NextResponse.json({
+    success: true,
+    data: mockData,
+  });
 }
 ```
 
-### Client Component
+### 2. Fetcher 함수
+
 ```typescript
+// app/posts/api/postsApi.ts
+import type { Post } from '@/app/api/posts/route';
+
+interface PostsResponse {
+  success: boolean;
+  data: Post[];
+}
+
+export const postsApi = {
+  getPosts: async (): Promise<Post[]> => {
+    const response = await fetch('/api/posts', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch posts');
+    }
+
+    const result: PostsResponse = await response.json();
+    return result.data;
+  },
+};
+```
+
+### 3. Client Component (useSuspenseQuery)
+
+```typescript
+// app/posts/ui/PostList.tsx
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { postsApi } from '../api/postsApi';
 
-export default function ClientPage() {
-  const { data } = useQuery({
-    queryKey: ['data'],
-    queryFn: () => fetch('/api/data').then(r => r.json()),
+export function PostList() {
+  const { data: posts } = useSuspenseQuery({
+    queryKey: ['posts'],
+    queryFn: postsApi.getPosts,
   });
 
-  return <div>{data?.title}</div>;
+  return (
+    <div>
+      {posts.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
+    </div>
+  );
 }
 ```
+
+### 4. Page Component (Suspense)
+
+```typescript
+// app/posts/page.tsx
+import { Suspense } from 'react';
+import { PostList } from './ui/PostList';
+
+export default function PostsPage() {
+  return (
+    <div>
+      <h1>포스트</h1>
+      <Suspense fallback={<div>Loading...</div>}>
+        <PostList />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+### 왜 이 구조를 사용하는가?
+
+**장점:**
+1. **Streaming SSR 지원**: `ReactQueryStreamedHydration`과 완벽한 궁합
+2. **자동 로딩 처리**: `isLoading` 체크 불필요, Suspense가 자동 처리
+3. **에러 처리 일관성**: Error Boundary로 통합 관리
+4. **타입 안정성**: API Route → Fetcher → Component 전체 타입 체인
+5. **테스트 용이성**: Mock 데이터를 API Route에서 관리
+
+**언제 Server Component 직접 fetch를 사용하는가?**
+- SEO가 매우 중요한 정적 콘텐츠
+- 클라이언트 인터랙션이 전혀 없는 경우
+
+**현재 구조가 적합한 경우:**
+- 실시간 업데이트 필요
+- 클라이언트 인터랙션 많음 (필터링, 검색, 무한스크롤)
+- 낙관적 업데이트 필요
 
 ## 현재 프로젝트 폰트
 

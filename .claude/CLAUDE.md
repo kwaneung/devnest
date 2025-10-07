@@ -7,6 +7,8 @@ Next.js 15 (App Router) + React 19 + TypeScript + Tailwind CSS 4 + daisyUI 5 기
 - **패키지 매니저**: pnpm
 - **아키텍처**: FSD (Feature-Sliced Design) v2.1
 - **빌드 도구**: Turbopack
+- **상태 관리**: Tanstack Query v5 (React Query)
+- **데이터 페칭**: `useSuspenseQuery` + API Routes
 
 ## 핵심 원칙
 
@@ -14,6 +16,21 @@ Next.js 15 (App Router) + React 19 + TypeScript + Tailwind CSS 4 + daisyUI 5 기
 2. **코드 품질**: ESLint, Prettier, TypeScript strict 모드
 3. **접근성**: WCAG 가이드라인 준수
 4. **성능**: Next.js 최적화 기능 활용 (Image, Font 등)
+5. **데이터 페칭**: `useSuspenseQuery` 위주 사용, Suspense + Error Boundary 패턴
+
+## 작업 후 필수 검사
+
+코드 수정 후 **반드시** 다음 검사를 실행하세요:
+
+```bash
+# 1. FSD 아키텍처 검사
+pnpm steiger
+
+# 2. ESLint 검사
+pnpm lint
+```
+
+IMPORTANT: 파일 수정(Edit, Write) 작업을 완료한 후에는 항상 `pnpm steiger`와 `pnpm lint`를 실행하여 아키텍처 및 코드 품질을 검증해야 합니다.
 
 ## 상세 가이드
 
