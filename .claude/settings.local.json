@@ -1,6 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm steiger:*)", "Bash(pnpm lint:*)"],
+    "allow": [
+      "Bash(pnpm steiger:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm format:*)"
+    ],
     "deny": [],
     "ask": []
   }
