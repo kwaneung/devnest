@@ -8,7 +8,7 @@ Next.js 15 (App Router) + React 19 + TypeScript + Tailwind CSS 4 + daisyUI 5 기
 - **아키텍처**: FSD (Feature-Sliced Design) v2.1
 - **빌드 도구**: Turbopack
 - **상태 관리**: Tanstack Query v5 (React Query)
-- **데이터 페칭**: `useSuspenseQuery` + API Routes
+- **데이터 페칭**: `useSuspenseQuery` + Server Actions
 
 ## 핵심 원칙
 
@@ -45,6 +45,7 @@ IMPORTANT: 파일 수정(Edit, Write) 작업을 완료한 후에는 항상 `pnpm
 - @.claude/guides/nextjs-patterns.md - Next.js App Router 패턴
 - @.claude/guides/daisyui-guide.md - daisyUI 컴포넌트 사용법
 - @.claude/guides/development.md - 개발 워크플로우
+- @.claude/guides/data-fetching.md - 데이터 페칭 및 핸들링 가이드 (Server Actions, API Routes, Tanstack Query)
 
 ## 빠른 시작
 

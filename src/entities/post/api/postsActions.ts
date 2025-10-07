@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+'use server';
 
-import type { Post } from '@/entities/post';
+import type { Post, GetPostsParams } from '../model';
 
+// 모킹 데이터 (실제로는 DB나 외부 API에서 가져옴)
 const mockPosts: Post[] = [
   {
     id: 1,
@@ -55,10 +56,17 @@ const mockPosts: Post[] = [
   },
 ];
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const sort = searchParams.get('sort') || 'latest'; // 'latest' | 'popular'
-  const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
+/**
+ * 포스트 목록을 가져오는 Server Action
+ * @param params - 정렬 및 제한 파라미터
+ * @returns 포스트 배열
+ */
+export async function getPosts(params?: GetPostsParams): Promise<Post[]> {
+  // 실제로는 외부 API나 DB에서 데이터를 가져옴
+  // await fetch('https://api.example.com/posts', { next: { revalidate: 3600 } })
+
+  const sort = params?.sort || 'latest';
+  const limit = params?.limit;
 
   // 정렬
   let sortedPosts = [...mockPosts];
@@ -76,8 +84,5 @@ export async function GET(request: Request) {
     sortedPosts = sortedPosts.slice(0, limit);
   }
 
-  return NextResponse.json({
-    success: true,
-    data: sortedPosts,
-  });
+  return sortedPosts;
 }

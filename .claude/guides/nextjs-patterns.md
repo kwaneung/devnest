@@ -110,81 +110,44 @@ const DynamicComponent = dynamic(() => import('@/components/Heavy'), {
 
 **핵심 원칙:**
 
-- `useSuspenseQuery`/`useSuspenseQueries` 위주 사용
-- `useQuery`/`useQueries`는 지양
-- Suspense + Error Boundary로 로딩/에러 처리
+- **정적 페이지**: Server Component에서 Server Actions 직접 호출 (SSG/ISR 활용)
+- **인터랙션 있는 페이지**: Client Component + Tanstack Query + Server Actions
+- 상세한 내용은 `@.claude/guides/data-fetching.md` 참조
 
 **데이터 흐름:**
 
 ```
-useSuspenseQuery → fetcher 함수 → Next.js API Route
+Server Component → Server Action → Mock Data / External API
 ```
 
-### 1. API Route (Mock 데이터)
+### 1. Server Actions (데이터 페칭 함수)
 
 ```typescript
-// app/api/posts/route.ts
-import { NextResponse } from 'next/server';
+// src/entities/post/api/postsActions.ts
+'use server';
 
-export interface Post {
-  id: number;
-  title: string;
-  content: string;
-}
+import type { Post, GetPostsParams } from '../model';
 
-export async function GET() {
-  // DB 연결 전 Mock 데이터 사용
+export async function getPosts(params?: GetPostsParams): Promise<Post[]> {
+  // 실제로는 DB나 외부 API 호출
+  // 현재는 Mock 데이터 사용
   const mockData: Post[] = [{ id: 1, title: 'Post 1', content: 'Content 1' }];
 
-  return NextResponse.json({
-    success: true,
-    data: mockData,
-  });
+  const sort = params?.sort || 'latest';
+  // 정렬 로직...
+
+  return mockData;
 }
 ```
 
-### 2. Fetcher 함수
+### 2. Server Component (정적 페이지 - SSG)
 
 ```typescript
-// app/posts/api/postsApi.ts
-import type { Post } from '@/app/api/posts/route';
+// src/widgets/post-list/ui/PostListTable.tsx
+import { getPosts } from '@/entities/post';
 
-interface PostsResponse {
-  success: boolean;
-  data: Post[];
-}
-
-export const postsApi = {
-  getPosts: async (): Promise<Post[]> => {
-    const response = await fetch('/api/posts', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch posts');
-    }
-
-    const result: PostsResponse = await response.json();
-    return result.data;
-  },
-};
-```
-
-### 3. Client Component (useSuspenseQuery)
-
-```typescript
-// app/posts/ui/PostList.tsx
-'use client';
-
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { postsApi } from '../api/postsApi';
-
-export function PostList() {
-  const { data: posts } = useSuspenseQuery({
-    queryKey: ['posts'],
-    queryFn: postsApi.getPosts,
-  });
+export async function PostListTable() {
+  const posts = await getPosts({ sort: 'latest' });
 
   return (
     <div>
@@ -196,45 +159,73 @@ export function PostList() {
 }
 ```
 
-### 4. Page Component (Suspense)
+### 3. Page Component (Suspense)
 
 ```typescript
 // app/posts/page.tsx
 import { Suspense } from 'react';
-import { PostList } from './ui/PostList';
+import { PostsPage } from '@/pages/posts';
 
-export default function PostsPage() {
+export default function Page() {
   return (
-    <div>
-      <h1>포스트</h1>
-      <Suspense fallback={<div>Loading...</div>}>
-        <PostList />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostsPage />
+    </Suspense>
   );
 }
 ```
 
-### 왜 이 구조를 사용하는가?
+### 4. Client Component (인터랙션 필요 시만)
 
-**장점:**
+```typescript
+// 검색/필터링 등 인터랙션이 필요한 경우만 사용
+'use client';
 
-1. **Streaming SSR 지원**: `ReactQueryStreamedHydration`과 완벽한 궁합
-2. **자동 로딩 처리**: `isLoading` 체크 불필요, Suspense가 자동 처리
-3. **에러 처리 일관성**: Error Boundary로 통합 관리
-4. **타입 안정성**: API Route → Fetcher → Component 전체 타입 체인
-5. **테스트 용이성**: Mock 데이터를 API Route에서 관리
+import { useQuery } from '@tanstack/react-query';
+import { getPosts } from '@/entities/post';
 
-**언제 Server Component 직접 fetch를 사용하는가?**
+export function PostSearch() {
+  const [search, setSearch] = useState('');
 
-- SEO가 매우 중요한 정적 콘텐츠
-- 클라이언트 인터랙션이 전혀 없는 경우
+  const { data: posts } = useQuery({
+    queryKey: ['posts', search],
+    queryFn: () => getPosts({ search }),
+    enabled: search.length > 0,
+  });
 
-**현재 구조가 적합한 경우:**
+  return (
+    <>
+      <input
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="검색..."
+      />
+      {posts?.map((post) => <div key={post.id}>{post.title}</div>)}
+    </>
+  );
+}
+```
 
-- 실시간 업데이트 필요
-- 클라이언트 인터랙션 많음 (필터링, 검색, 무한스크롤)
-- 낙관적 업데이트 필요
+### 현재 구조의 장점
+
+**Server Component 우선 전략:**
+
+1. **SSG/ISR 지원**: 빌드 타임에 정적 생성, CDN 캐싱
+2. **SEO 최적화**: 초기 HTML에 컨텐츠 포함
+3. **성능 향상**: Zero JavaScript (인터랙션 없으면)
+4. **타입 안전성**: Server Action → Component 직접 연결
+
+**언제 Client Component + Tanstack Query 사용?**
+
+- 실시간 검색/필터링
+- 무한 스크롤
+- 낙관적 업데이트 (mutation)
+- 복잡한 클라이언트 상태 관리
+
+**API Routes는 언제 사용?**
+
+- Webhook 수신 (Stripe, GitHub 등)
+- OAuth 콜백
+- 외부 시스템에 API 제공
 
 ## 현재 프로젝트 폰트
 

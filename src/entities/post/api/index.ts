@@ -1,1 +1,1 @@
-export { postsApi } from './postsApi';
+export { getPosts } from './postsActions';

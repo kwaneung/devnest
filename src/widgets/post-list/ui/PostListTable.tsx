@@ -1,15 +1,9 @@
-'use client';
-
-import { useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
-import { postsApi } from '@/entities/post';
+import { getPosts } from '@/entities/post';
 
-export function PostListTable() {
-  const { data: posts } = useSuspenseQuery({
-    queryKey: ['posts', 'latest'],
-    queryFn: () => postsApi.getPosts({ sort: 'latest' }),
-  });
+export async function PostListTable() {
+  const posts = await getPosts({ sort: 'latest' });
 
   return (
     <div className="overflow-x-auto">

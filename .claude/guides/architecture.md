@@ -79,7 +79,7 @@ src/
 │
 ├── entities/
 │   └── post/
-│       ├── api/postsApi.ts         # import from @/shared/api
+│       ├── api/postsActions.ts     # Server Actions ('use server')
 │       ├── model/types.ts
 │       └── ui/PostCard.tsx
 │
