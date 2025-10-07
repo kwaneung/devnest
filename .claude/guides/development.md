@@ -52,6 +52,7 @@ pnpm steiger:watch
 ## Git 워크플로우
 
 ### Pre-commit Hook (자동 실행)
+
 - Prettier 자동 포맷팅
 - ESLint 자동 수정
 - Steiger FSD 아키텍처 검사
@@ -87,11 +88,13 @@ git commit -m "chore: 빌드 설정 변경"
 ## 반응형 테스트
 
 ### 브라우저 개발자 도구
+
 1. F12 또는 Cmd+Opt+I
 2. Toggle device toolbar (Cmd+Shift+M)
 3. 다양한 디바이스 프리셋 테스트
 
 ### 테스트해야 할 브레이크포인트
+
 - [ ] 360px (모바일 S)
 - [ ] 375px (모바일 M)
 - [ ] 414px (모바일 L)
@@ -101,6 +104,7 @@ git commit -m "chore: 빌드 설정 변경"
 - [ ] 1440px (대형 데스크톱)
 
 ### Lighthouse 성능 검사
+
 ```bash
 # Chrome DevTools > Lighthouse
 # - Performance
@@ -148,12 +152,14 @@ pnpm add date-fns  # 날짜 처리
 ## IDE 설정 (VSCode)
 
 ### 권장 확장
+
 - ESLint
 - Prettier
 - Tailwind CSS IntelliSense
 - TypeScript and JavaScript Language Features
 
 ### 워크스페이스 설정
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -161,8 +167,6 @@ pnpm add date-fns  # 날짜 처리
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "tailwindCSS.experimental.classRegex": [
-    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
+  "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]]
 }
 ```

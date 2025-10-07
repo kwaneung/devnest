@@ -18,13 +18,13 @@
 
 ## 네이밍 컨벤션
 
-| 타입 | 컨벤션 | 예시 |
-|------|--------|------|
-| 컴포넌트 | PascalCase | `UserProfile` |
-| 인터페이스 | PascalCase | `UserData` |
-| 타입 별칭 | PascalCase | `ApiResponse` |
-| 함수/변수 | camelCase | `getUserData` |
-| 상수 | UPPER_SNAKE_CASE | `API_BASE_URL` |
+| 타입       | 컨벤션           | 예시           |
+| ---------- | ---------------- | -------------- |
+| 컴포넌트   | PascalCase       | `UserProfile`  |
+| 인터페이스 | PascalCase       | `UserData`     |
+| 타입 별칭  | PascalCase       | `ApiResponse`  |
+| 함수/변수  | camelCase        | `getUserData`  |
+| 상수       | UPPER_SNAKE_CASE | `API_BASE_URL` |
 
 ## React 규칙
 

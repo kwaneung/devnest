@@ -2,13 +2,13 @@
 
 ## 파일 구조
 
-| 파일 | 용도 |
-|------|------|
-| `page.tsx` | 페이지 컴포넌트 |
-| `layout.tsx` | 레이아웃 (중첩 가능) |
-| `loading.tsx` | 로딩 UI (Suspense) |
-| `error.tsx` | 에러 UI |
-| `not-found.tsx` | 404 페이지 |
+| 파일            | 용도                 |
+| --------------- | -------------------- |
+| `page.tsx`      | 페이지 컴포넌트      |
+| `layout.tsx`    | 레이아웃 (중첩 가능) |
+| `loading.tsx`   | 로딩 UI (Suspense)   |
+| `error.tsx`     | 에러 UI              |
+| `not-found.tsx` | 404 페이지           |
 
 ## 페이지 컴포넌트 템플릿
 
@@ -61,6 +61,7 @@ export default function RootLayout({
 ## 성능 최적화
 
 ### 이미지 최적화 (필수)
+
 ```typescript
 import Image from 'next/image';
 
@@ -74,6 +75,7 @@ import Image from 'next/image';
 ```
 
 ### 폰트 최적화
+
 ```typescript
 import localFont from 'next/font/local';
 
@@ -92,6 +94,7 @@ export default function RootLayout({ children }) {
 ```
 
 ### 동적 Import
+
 ```typescript
 import dynamic from 'next/dynamic';
 
@@ -106,11 +109,13 @@ const DynamicComponent = dynamic(() => import('@/components/Heavy'), {
 ### 프로젝트 데이터 페칭 전략
 
 **핵심 원칙:**
+
 - `useSuspenseQuery`/`useSuspenseQueries` 위주 사용
 - `useQuery`/`useQueries`는 지양
 - Suspense + Error Boundary로 로딩/에러 처리
 
 **데이터 흐름:**
+
 ```
 useSuspenseQuery → fetcher 함수 → Next.js API Route
 ```
@@ -129,9 +134,7 @@ export interface Post {
 
 export async function GET() {
   // DB 연결 전 Mock 데이터 사용
-  const mockData: Post[] = [
-    { id: 1, title: 'Post 1', content: 'Content 1' },
-  ];
+  const mockData: Post[] = [{ id: 1, title: 'Post 1', content: 'Content 1' }];
 
   return NextResponse.json({
     success: true,
@@ -215,6 +218,7 @@ export default function PostsPage() {
 ### 왜 이 구조를 사용하는가?
 
 **장점:**
+
 1. **Streaming SSR 지원**: `ReactQueryStreamedHydration`과 완벽한 궁합
 2. **자동 로딩 처리**: `isLoading` 체크 불필요, Suspense가 자동 처리
 3. **에러 처리 일관성**: Error Boundary로 통합 관리
@@ -222,10 +226,12 @@ export default function PostsPage() {
 5. **테스트 용이성**: Mock 데이터를 API Route에서 관리
 
 **언제 Server Component 직접 fetch를 사용하는가?**
+
 - SEO가 매우 중요한 정적 콘텐츠
 - 클라이언트 인터랙션이 전혀 없는 경우
 
 **현재 구조가 적합한 경우:**
+
 - 실시간 업데이트 필요
 - 클라이언트 인터랙션 많음 (필터링, 검색, 무한스크롤)
 - 낙관적 업데이트 필요

@@ -23,14 +23,17 @@ Next.js 15 (App Router) + React 19 + TypeScript + Tailwind CSS 4 + daisyUI 5 기
 코드 수정 후 **반드시** 다음 검사를 실행하세요:
 
 ```bash
-# 1. FSD 아키텍처 검사
+# 1. Prettier 포맷팅 및 자동 수정
+pnpm format
+
+# 2. FSD 아키텍처 검사
 pnpm steiger
 
-# 2. ESLint 검사
-pnpm lint
+# 3. Prettier, ESLint 및 TypeScript 검사
+pnpm check
 ```
 
-IMPORTANT: 파일 수정(Edit, Write) 작업을 완료한 후에는 항상 `pnpm steiger`와 `pnpm lint`를 실행하여 아키텍처 및 코드 품질을 검증해야 합니다.
+IMPORTANT: 파일 수정(Edit, Write) 작업을 완료한 후에는 항상 `pnpm format`, `pnpm steiger`, `pnpm check`를 순서대로 실행하여 코드 포맷, 아키텍처 및 코드 품질을 검증해야 합니다.
 
 ## 상세 가이드
 

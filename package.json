@@ -7,6 +7,11 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm lint && pnpm type-check",
     "steiger": "steiger ./src",
     "steiger:watch": "steiger ./src --watch",
     "prepare": "husky install"

@@ -15,6 +15,7 @@
 ## 주요 컴포넌트
 
 ### 버튼
+
 ```tsx
 <button className="btn btn-primary">Primary</button>
 <button className="btn btn-secondary">Secondary</button>
@@ -27,6 +28,7 @@
 ```
 
 ### 카드
+
 ```tsx
 <div className="card w-full max-w-sm md:max-w-md lg:max-w-lg bg-base-100 shadow-xl">
   <div className="card-body p-4 md:p-6">
@@ -40,6 +42,7 @@
 ```
 
 ### 입력 필드
+
 ```tsx
 <label className="input input-bordered flex items-center gap-2">
   <input type="text" className="grow" placeholder="Search" />
@@ -51,6 +54,7 @@
 ```
 
 ### 네비게이션 바
+
 ```tsx
 <div className="navbar bg-base-100">
   <div className="navbar-start">
@@ -58,8 +62,12 @@
   </div>
   <div className="navbar-center hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
-      <li><a>Item 1</a></li>
-      <li><a>Item 2</a></li>
+      <li>
+        <a>Item 1</a>
+      </li>
+      <li>
+        <a>Item 2</a>
+      </li>
     </ul>
   </div>
   <div className="navbar-end">
@@ -69,6 +77,7 @@
 ```
 
 ### 드로어 (모바일 사이드바)
+
 ```tsx
 <div className="drawer">
   <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -80,14 +89,19 @@
   <div className="drawer-side">
     <label htmlFor="my-drawer" className="drawer-overlay"></label>
     <ul className="menu p-4 w-80 min-h-full bg-base-200">
-      <li><a>Sidebar Item 1</a></li>
-      <li><a>Sidebar Item 2</a></li>
+      <li>
+        <a>Sidebar Item 1</a>
+      </li>
+      <li>
+        <a>Sidebar Item 2</a>
+      </li>
     </ul>
   </div>
 </div>
 ```
 
 ### 알림 (Alert)
+
 ```tsx
 <div className="alert alert-info">
   <svg>...</svg>
@@ -99,21 +113,31 @@
 ```
 
 ### 폼 컨트롤
+
 ```tsx
-{/* 체크박스 */}
-<input type="checkbox" className="checkbox checkbox-primary" />
+{
+  /* 체크박스 */
+}
+<input type="checkbox" className="checkbox checkbox-primary" />;
 
-{/* 토글 */}
-<input type="checkbox" className="toggle toggle-primary" />
+{
+  /* 토글 */
+}
+<input type="checkbox" className="toggle toggle-primary" />;
 
-{/* 라디오 */}
-<input type="radio" name="radio" className="radio radio-primary" />
+{
+  /* 라디오 */
+}
+<input type="radio" name="radio" className="radio radio-primary" />;
 
-{/* 범위 */}
-<input type="range" className="range range-primary" />
+{
+  /* 범위 */
+}
+<input type="range" className="range range-primary" />;
 ```
 
 ### 모달
+
 ```tsx
 <dialog id="my-modal" className="modal">
   <div className="modal-box">
@@ -125,12 +149,12 @@
       </form>
     </div>
   </div>
-</dialog>
+</dialog>;
 
-{/* 모달 열기 */}
-<button onClick={() => document.getElementById('my-modal').showModal()}>
-  Open Modal
-</button>
+{
+  /* 모달 열기 */
+}
+<button onClick={() => document.getElementById('my-modal').showModal()}>Open Modal</button>;
 ```
 
 ## 테마 전환
