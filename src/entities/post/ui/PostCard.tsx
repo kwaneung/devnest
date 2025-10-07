@@ -16,8 +16,8 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link href={`/posts/${post.id}`} className="group">
       <article className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-300 h-full border border-base-content/5 hover:border-primary/20 overflow-hidden">
-        {/* 상단 색상 바 */}
-        <div className="h-1 bg-gradient-to-r from-primary to-secondary"></div>
+        {/* 상단 색상 바 - Apple Intelligence 스타일 */}
+        <div className="h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500"></div>
 
         <div className="card-body gap-4">
           {/* 제목 */}
