@@ -32,12 +32,12 @@ export default function Header() {
     if (mode === 'system') {
       // 시스템 설정 따르기
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = prefersDark ? 'forest' : 'pastel';
+      const theme = prefersDark ? 'night' : 'pastel';
       document.documentElement.setAttribute('data-theme', theme);
     } else if (mode === 'light') {
       document.documentElement.setAttribute('data-theme', 'pastel');
     } else {
-      document.documentElement.setAttribute('data-theme', 'forest');
+      document.documentElement.setAttribute('data-theme', 'night');
     }
 
     try {

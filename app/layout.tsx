@@ -33,13 +33,13 @@ export default function RootLayout({
                   }
 
                   if (savedMode === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'forest');
+                    document.documentElement.setAttribute('data-theme', 'night');
                     return;
                   }
 
                   // 2. system 또는 없으면 OS 다크모드 설정 확인
                   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  const theme = prefersDark ? 'forest' : 'pastel';
+                  const theme = prefersDark ? 'night' : 'pastel';
                   document.documentElement.setAttribute('data-theme', theme);
                 } catch {
                   // 3. 실패 시 기본값 (pastel)
