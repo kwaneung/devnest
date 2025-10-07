@@ -17,7 +17,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" data-theme="auto">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  // 1. localStorage에서 저장된 테마 모드 확인
+                  const savedMode = localStorage.getItem('themeMode');
+
+                  if (savedMode === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'pastel');
+                    return;
+                  }
+
+                  if (savedMode === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'forest');
+                    return;
+                  }
+
+                  // 2. system 또는 없으면 OS 다크모드 설정 확인
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  const theme = prefersDark ? 'forest' : 'pastel';
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch {
+                  // 3. 실패 시 기본값 (pastel)
+                  document.documentElement.setAttribute('data-theme', 'pastel');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-dvh">
         <Providers>
           <NavProvider>

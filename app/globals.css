@@ -1,6 +1,22 @@
 @import 'tailwindcss';
 @import 'pretendard/dist/web/static/pretendard.css';
-@import '../styles/modern-theme.css';
+/* @import '../styles/modern-theme.css'; */
+
+@plugin "daisyui";
+
+/* Pastel Light Theme */
+@plugin "daisyui/theme" {
+  name: 'pastel';
+  default: true;
+  prefersdark: false;
+}
+
+/* Forest Dark Theme */
+@plugin "daisyui/theme" {
+  name: 'forest';
+  default: false;
+  prefersdark: true;
+}
 
 @theme inline {
   --font-sans:
