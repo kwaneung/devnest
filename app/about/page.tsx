@@ -20,7 +20,7 @@ export default function AboutPage() {
               <div className="relative avatar">
                 <div className="w-32 h-32 rounded-full ring-4 ring-base-100 shadow-2xl">
                   <Image
-                    src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp"
+                    src="/dev-jeans-kt.png"
                     alt="김관응"
                     width={128}
                     height={128}
