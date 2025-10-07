@@ -14,9 +14,6 @@ export function HomePage() {
           <br />
           프론트엔드 개발, 아키텍처, 그리고 배운 것들을 정리합니다.
         </p>
-        <Link href="/posts" className="btn btn-primary btn-lg mt-4">
-          모든 글 보기
-        </Link>
       </section>
 
       {/* 인기 포스트 */}

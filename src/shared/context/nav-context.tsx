@@ -15,7 +15,6 @@ export interface NavContextValue {
 export const defaultNavItems: NavItem[] = [
   { label: '홈', href: '/' },
   { label: '포스트', href: '/posts' },
-  { label: '디자인 시스템', href: '/design-system' },
   { label: '소개', href: '/about' },
 ];
 

@@ -11,17 +11,11 @@ export default function Footer() {
         <Link className="link link-hover" href="/about">
           소개
         </Link>
-        <Link className="link link-hover" href="/design-system">
-          디자인 시스템
-        </Link>
       </nav>
       <nav>
         <h6 className="footer-title">소셜</h6>
         <Link className="link link-hover" href="https://github.com" target="_blank">
           GitHub
-        </Link>
-        <Link className="link link-hover" href="https://x.com" target="_blank">
-          X
         </Link>
         <Link className="link link-hover" href="https://linkedin.com" target="_blank">
           LinkedIn
