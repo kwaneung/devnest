@@ -11,9 +11,7 @@ interface MarkdownContentProps {
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const components: Components = {
     code(props: React.ComponentPropsWithoutRef<'code'>) {
-      const { children, className, ...rest } = props;
-      const match = /language-(\w+)/.exec(className || '');
-      const language = match ? match[1] : '';
+      const { children, ...rest } = props;
 
       // children에 줄바꿈이 있으면 코드 블록, 없으면 인라인 코드
       const hasLineBreak = String(children).includes('\n');

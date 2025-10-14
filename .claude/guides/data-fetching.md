@@ -157,7 +157,7 @@ HTTP 엔드포인트를 제공하는 서버 측 라우트 핸들러입니다.
 ### 예시 코드
 
 ```typescript
-// app/api/webhook/stripe/route.ts
+// src/app/api/webhook/stripe/route.ts
 import { NextResponse } from 'next/server';
 
 /**
@@ -181,7 +181,7 @@ export async function POST(request: Request) {
 ```
 
 ```typescript
-// app/api/auth/callback/route.ts
+// src/app/api/auth/callback/route.ts
 import { NextResponse } from 'next/server';
 
 /**
@@ -204,7 +204,7 @@ export async function GET(request: Request) {
 ```
 
 ```typescript
-// app/api/proxy/external/route.ts
+// src/app/api/proxy/external/route.ts
 import { NextResponse } from 'next/server';
 
 /**
@@ -288,7 +288,7 @@ src/entities/post/
 └── model/
     └── types.ts
 
-app/api/                     # ⚠️ Webhook, OAuth 등만 유지
+src/app/api/                     # ⚠️ Webhook, OAuth 등만 유지
 └── webhook/
     └── route.ts
 ```
@@ -637,7 +637,7 @@ export function PostList() {
   return <div>{data}</div>;
 }
 
-// app/page.tsx
+// src/app/page.tsx
 export default function Page() {
   return <PostList />; // 초기 렌더링 시 오류!
 }
@@ -652,7 +652,7 @@ export async function PostList() {
 }
 
 // ✅ 해결 방법 2: force-dynamic (SSG 포기)
-// app/page.tsx
+// src/app/page.tsx
 export const dynamic = 'force-dynamic';
 
 export default function Page() {
@@ -672,7 +672,7 @@ export default function Page() {
 
 ```typescript
 // ✅ 초기 데이터는 Server Component로, 인터랙션은 Client Component로
-// app/posts/page.tsx
+// src/app/posts/page.tsx
 import { getPosts } from '@/entities/post';
 import { PostListClient } from './PostListClient';
 

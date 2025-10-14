@@ -162,7 +162,7 @@ export async function PostListTable() {
 ### 3. Page Component (Suspense)
 
 ```typescript
-// app/posts/page.tsx
+// src/app/posts/page.tsx
 import { Suspense } from 'react';
 import { PostsPage } from '@/pages/posts';
 
