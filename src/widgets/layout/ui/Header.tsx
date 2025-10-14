@@ -48,12 +48,40 @@ export default function Header() {
   };
 
   const cycleTheme = () => {
+    console.log('cycleTheme');
     if (!themeMode) return;
     const modes: ThemeMode[] = ['light', 'dark', 'system'];
     const currentIndex = modes.indexOf(themeMode);
     const nextMode = modes[(currentIndex + 1) % modes.length];
     setThemeMode(nextMode);
     applyTheme(nextMode);
+
+    // iOS Safari의 safe area 색상을 즉시 갱신하기 위한 workaround
+    // iOS Safari는 theme-color 메타 태그 변경을 즉시 반영하지 않고,
+    // 화면에 렌더링되는 새로운 compositing layer가 생성될 때만 재평가함
+    // 거의 투명한(0.01) 오버레이를 잠깐 생성하여 iOS Safari가 viewport를 재평가하도록 유도
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.01);
+      z-index: 9999;
+      pointer-events: none;
+      transform: translateX(0);
+      transition: transform 0.3s ease;
+      will-change: transform;
+    `;
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+      overlay.style.transform = 'translateX(1px)';
+      setTimeout(() => {
+        document.body.removeChild(overlay);
+      }, 300);
+    });
   };
 
   useEffect(() => {
