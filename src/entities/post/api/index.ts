@@ -1,1 +1,1 @@
-export { getPosts } from './postsActions';
+export { getPosts, getPostById } from './postsActions';
