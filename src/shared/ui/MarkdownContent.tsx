@@ -33,6 +33,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
       return (
         <div className="not-prose mockup-code overflow-x-auto">
           {lines.map((line, index) => (
+            // eslint-disable-next-line react/no-array-index-key
             <pre key={`line-${index}`} data-prefix={index + 1}>
               <code>{line || ' '}</code>
             </pre>
