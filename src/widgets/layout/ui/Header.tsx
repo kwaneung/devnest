@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNav } from '@/shared/context';
 
@@ -12,87 +12,130 @@ export default function Header() {
   const [themeMode, setThemeMode] = useState<ThemeMode | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    // 초기 테마 모드 감지
-    try {
-      const savedMode = localStorage.getItem('themeMode') as ThemeMode | null;
-      if (savedMode && ['light', 'dark', 'system'].includes(savedMode)) {
-        setThemeMode(savedMode);
-      } else {
-        setThemeMode('system');
-      }
-    } catch {
-      // localStorage 사용 불가능
-      setThemeMode('system');
-    }
-  }, []);
+  /**
+   * theme-color 메타 태그 업데이트
+   * Next.js Metadata API로 생성된 메타 태그를 클라이언트에서 동적으로 제어
+   */
+  const updateThemeColor = useCallback((theme: 'pastel' | 'night') => {
+    const themeColor = theme === 'night' ? '#1a1a1a' : '#ffffff';
 
-  const applyTheme = (mode: ThemeMode) => {
-    if (mode === 'system') {
-      // 시스템 설정 따르기
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = prefersDark ? 'night' : 'pastel';
-      document.documentElement.setAttribute('data-theme', theme);
-    } else if (mode === 'light') {
-      document.documentElement.setAttribute('data-theme', 'pastel');
-    } else {
-      document.documentElement.setAttribute('data-theme', 'night');
-    }
+    // 1. Metadata API로 생성된 모든 theme-color 메타 태그 제거
+    const existingMetas = document.querySelectorAll('meta[name="theme-color"]');
+    existingMetas.forEach((meta) => meta.remove());
 
-    try {
-      localStorage.setItem('themeMode', mode);
-    } catch {
-      // localStorage 사용 불가능
-    }
-  };
+    // 2. 새로운 단일 메타 태그 생성 (media 속성 없이)
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = themeColor;
+    document.head.appendChild(meta);
 
-  const cycleTheme = () => {
-    console.log('cycleTheme');
-    if (!themeMode) return;
-    const modes: ThemeMode[] = ['light', 'dark', 'system'];
-    const currentIndex = modes.indexOf(themeMode);
-    const nextMode = modes[(currentIndex + 1) % modes.length];
-    setThemeMode(nextMode);
-    applyTheme(nextMode);
-
-    // iOS Safari의 safe area 색상을 즉시 갱신하기 위한 workaround
-    // iOS Safari는 theme-color 메타 태그 변경을 즉시 반영하지 않고,
-    // 화면에 렌더링되는 새로운 compositing layer가 생성될 때만 재평가함
-    // 거의 투명한(0.01) 오버레이를 잠깐 생성하여 iOS Safari가 viewport를 재평가하도록 유도
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
+    // 3. iOS Safari safe area 강제 갱신
+    // iOS Safari는 메타 태그 변경만으로는 status bar 색상을 즉시 업데이트하지 않음
+    // 새로운 compositing layer를 생성하여 viewport 재평가 유도
+    const trigger = document.createElement('div');
+    trigger.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.01);
-      z-index: 9999;
       pointer-events: none;
-      transform: translateX(0);
-      transition: transform 0.3s ease;
+      z-index: 9999;
+      transform: translateZ(0);
       will-change: transform;
     `;
-    document.body.appendChild(overlay);
+    document.body.appendChild(trigger);
 
     requestAnimationFrame(() => {
-      overlay.style.transform = 'translateX(1px)';
+      trigger.style.transform = 'translateZ(1px)';
       setTimeout(() => {
-        document.body.removeChild(overlay);
+        if (trigger.parentNode) {
+          trigger.parentNode.removeChild(trigger);
+        }
       }, 300);
     });
-  };
+  }, []);
 
+  /**
+   * 테마 적용
+   * daisyUI data-theme 속성과 theme-color 메타 태그를 동기화
+   */
+  const applyTheme = useCallback(
+    (mode: ThemeMode) => {
+      let appliedTheme: 'pastel' | 'night';
+
+      // 테마 결정
+      if (mode === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        appliedTheme = prefersDark ? 'night' : 'pastel';
+      } else if (mode === 'light') {
+        appliedTheme = 'pastel';
+      } else {
+        appliedTheme = 'night';
+      }
+
+      // daisyUI 테마 적용
+      document.documentElement.setAttribute('data-theme', appliedTheme);
+
+      // theme-color 메타 태그 동기화
+      updateThemeColor(appliedTheme);
+
+      // localStorage 저장
+      try {
+        localStorage.setItem('themeMode', mode);
+      } catch {
+        // localStorage 사용 불가능 시 무시
+      }
+    },
+    [updateThemeColor],
+  );
+
+  /**
+   * 초기 마운트: localStorage에서 테마 복원 및 적용
+   */
   useEffect(() => {
-    // 시스템 다크모드 변경 감지
+    setMounted(true);
+
+    try {
+      const savedMode = localStorage.getItem('themeMode') as ThemeMode | null;
+      if (savedMode && ['light', 'dark', 'system'].includes(savedMode)) {
+        setThemeMode(savedMode);
+        applyTheme(savedMode);
+      } else {
+        setThemeMode('system');
+        applyTheme('system');
+      }
+    } catch {
+      setThemeMode('system');
+      applyTheme('system');
+    }
+  }, [applyTheme]);
+
+  /**
+   * 시스템 다크모드 변경 감지
+   */
+  useEffect(() => {
     if (themeMode === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handleChange = () => applyTheme('system');
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [themeMode]);
+  }, [themeMode, applyTheme]);
+
+  /**
+   * 테마 순환: light → dark → system
+   */
+  const cycleTheme = () => {
+    if (!themeMode) return;
+    const modes: ThemeMode[] = ['light', 'dark', 'system'];
+    const currentIndex = modes.indexOf(themeMode);
+    const nextMode = modes[(currentIndex + 1) % modes.length];
+    setThemeMode(nextMode);
+    applyTheme(nextMode);
+  };
+
   return (
     <div className="navbar bg-base-100/80 backdrop-blur border-b border-base-300 px-4 sticky top-0 z-50">
       <div className="navbar-start gap-2">
