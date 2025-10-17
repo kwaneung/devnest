@@ -7,4 +7,6 @@ export const metadata: Metadata = {
   description: '프론트엔드 개발, React, Next.js, TypeScript 등 다양한 기술에 대한 글을 작성합니다.',
 };
 
+export const revalidate = 60;
+
 export default PostsPage;

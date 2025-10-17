@@ -14,12 +14,12 @@
     "check": "pnpm format:check && pnpm lint && pnpm type-check",
     "steiger": "steiger ./src",
     "steiger:watch": "steiger ./src --watch",
+    "supabase:gen-types": "bash -c 'export $(cat .env.local | grep SUPABASE_ACCESS_TOKEN | xargs) && supabase gen types typescript --project-id fadvyjklohgyyntezngk > src/shared/lib/supabase/types.ts'",
     "prepare": "husky install"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
     "@tailwindcss/typography": "^0.5.19",
-    "@tanstack/react-query": "^5.90.2",
-    "@tanstack/react-query-next-experimental": "^5.90.2",
     "@vercel/analytics": "^1.5.0",
     "highlight.js": "^11.11.1",
     "next": "15.5.4",
@@ -27,7 +27,9 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "server-only": "^0.0.1",
+    "zod": "^4.1.12"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -40,7 +42,6 @@
     "@feature-sliced/steiger-plugin": "^0.5.7",
     "@rushstack/eslint-config": "^4.4.0",
     "@tailwindcss/postcss": "^4",
-    "@tanstack/eslint-plugin-query": "^5.91.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

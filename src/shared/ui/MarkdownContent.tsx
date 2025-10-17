@@ -10,6 +10,11 @@ interface MarkdownContentProps {
 
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const components: Components = {
+    pre(props: React.ComponentPropsWithoutRef<'pre'>) {
+      const { children } = props;
+      // pre 태그에 p-0 적용 (prose의 기본 padding 제거)
+      return <div className="p-0">{children}</div>;
+    },
     code(props: React.ComponentPropsWithoutRef<'code'>) {
       const { children, ...rest } = props;
 
@@ -44,7 +49,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   };
 
   return (
-    <article className="not-prose prose-lg max-w-none dark:prose-invert">
+    <article className="prose prose-lg max-w-none dark:prose-invert">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {content}
       </ReactMarkdown>

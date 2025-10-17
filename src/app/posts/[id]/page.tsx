@@ -10,6 +10,8 @@ interface PageProps {
   }>;
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const post = await getPostById(Number(id));
@@ -27,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: post.title,
       description: post.excerpt,
       type: 'article',
-      publishedTime: post.publishedAt,
+      publishedTime: post.publishedAt, // 이미 ISO string 형식
       authors: [post.author],
       tags: post.tags,
     },
@@ -42,5 +44,11 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  return <PostDetailPage postId={postId} />;
+  const post = await getPostById(postId);
+
+  if (!post) {
+    notFound();
+  }
+
+  return <PostDetailPage post={post} />;
 }

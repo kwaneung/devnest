@@ -19,6 +19,7 @@ export async function PostListTable() {
         </thead>
         <tbody>
           {posts.map((post, index) => {
+            // Server Actions에서 반환된 publishedAt은 ISO string이므로 Date로 변환
             const formattedDate = new Date(post.publishedAt).toLocaleDateString('ko-KR', {
               year: 'numeric',
               month: '2-digit',

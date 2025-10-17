@@ -3,7 +3,6 @@ import { fileURLToPath } from 'url';
 
 import { FlatCompat } from '@eslint/eslintrc';
 // ESLint 플러그인 가져오기
-import tanstackQuery from '@tanstack/eslint-plugin-query';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jsx_a11y from 'eslint-plugin-jsx-a11y';
 import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
@@ -51,14 +50,6 @@ const eslintConfig = [
     'plugin:react-hooks/recommended',
     'plugin:react/jsx-runtime',
   ),
-
-  // @tanstack/query 플러그인
-  {
-    plugins: {
-      '@tanstack/query': tanstackQuery,
-    },
-    rules: tanstackQuery.configs.recommended.rules,
-  },
 
   // React 설정
   {

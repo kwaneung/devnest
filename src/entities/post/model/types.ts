@@ -4,7 +4,7 @@ export interface Post {
   excerpt: string;
   content: string;
   author: string;
-  publishedAt: string;
+  publishedAt: string; // Server Actions는 JSON으로 직렬화되므로 string
   tags: string[];
   viewCount: number;
 }

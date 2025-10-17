@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+description: Claude Code 프로젝트 문서 참조
+---
+
+# DevNest 프로젝트
+
+이 프로젝트의 모든 규칙, 가이드라인, 아키텍처 정보는 `.claude/CLAUDE.md`와 관련 가이드 파일들을 참조하세요.
+
+## 주요 문서
+
+- **메인 문서**: [.claude/CLAUDE.md](mdc:.claude/CLAUDE.md)
+  - 프로젝트 개요
+  - 데이터베이스 및 데이터 페칭 핸드오프 룰
+  - 작업 후 필수 검사 사항
+  - 빠른 시작 가이드
+
+## 상세 가이드
+
+필요시 아래 파일들을 참조하세요:
+
+- [.claude/guides/architecture.md](mdc:.claude/guides/architecture.md) - FSD 아키텍처 구조
+- [.claude/guides/coding-standards.md](mdc:.claude/guides/coding-standards.md) - TypeScript/React 코딩 표준
+- [.claude/guides/responsive-design.md](mdc:.claude/guides/responsive-design.md) - 반응형 웹 디자인 가이드
+- [.claude/guides/nextjs-patterns.md](mdc:.claude/guides/nextjs-patterns.md) - Next.js App Router 패턴
+- [.claude/guides/daisyui-guide.md](mdc:.claude/guides/daisyui-guide.md) - daisyUI 컴포넌트 사용법
+- [.claude/guides/development.md](mdc:.claude/guides/development.md) - 개발 워크플로우
+- [.claude/guides/supabase-guide.md](mdc:.claude/guides/supabase-guide.md) - Supabase DB 접근 및 타입 관리
+- [.claude/guides/caching.md](mdc:.claude/guides/caching.md) - Next.js 15 use cache 캐싱 전략
+- [.claude/guides/server-actions.md](mdc:.claude/guides/server-actions.md) - Server Actions 및 API Routes 사용법
+
+## 핵심 원칙
+
+코드 작성 시 반드시 준수:
+
+1. **반응형 웹 디자인**: 모바일 퍼스트 접근, Tailwind 브레이크포인트 준수
+2. **코드 품질**: ESLint, Prettier, TypeScript strict 모드
+3. **접근성**: WCAG 가이드라인 준수
+4. **성능**: Next.js 최적화 기능 활용 (Image, Font 등)
+5. **데이터 페칭**: Server Actions + `use cache` (Next.js 15+)
+
+## 작업 후 필수 검사
+
+파일 수정 후 **반드시** 다음 검사를 실행:
+
+```bash
+# 1. Prettier 포맷팅
+pnpm format
+
+# 2. FSD 아키텍처 검사
+pnpm steiger
+
+# 3. Prettier, ESLint 및 TypeScript 검사
+pnpm check
+```
