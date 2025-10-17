@@ -24,6 +24,6 @@ import type { Database } from './types';
  * import { supabase } from '@/shared/lib/supabase'; // Build Error!
  */
 export const supabase = createClient<Database>(
-  supabaseEnv.NEXT_PUBLIC_SUPABASE_URL,
-  supabaseEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  supabaseEnv.SUPABASE_URL,
+  supabaseEnv.SUPABASE_ANON_KEY,
 );
