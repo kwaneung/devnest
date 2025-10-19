@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
 
 import { PopularPosts } from '@/widgets/post-list';
 
@@ -25,17 +24,7 @@ export function HomePage() {
           </Link>
         </div>
 
-        <Suspense
-          fallback={
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton h-64"></div>
-              ))}
-            </div>
-          }
-        >
-          <PopularPosts />
-        </Suspense>
+        <PopularPosts />
       </section>
     </div>
   );

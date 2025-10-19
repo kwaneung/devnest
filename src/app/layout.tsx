@@ -1,5 +1,6 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
+import NextTopLoader from 'nextjs-toploader';
 
 import './globals.css';
 import { Providers } from '@/app/providers';
@@ -86,6 +87,17 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-dvh">
+        <NextTopLoader
+          color="#FF6B6B"
+          height={4}
+          showSpinner={false}
+          easing="cubic-bezier(0.4, 0, 0.2, 1)"
+          speed={300}
+          shadow="0 0 10px #FF6B6B,0 0 5px #FF6B6B"
+          crawlSpeed={300}
+          initialPosition={0.08}
+          zIndex={9999}
+        />
         <Providers>
           <NavProvider>
             <a
