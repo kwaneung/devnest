@@ -1,4 +1,4 @@
-# Next.js App Router 패턴
+# Next.js App Router 패턴 (Next.js 16 + React 19.2)
 
 ## 파일 구조
 
@@ -55,6 +55,67 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+```
+
+## React 19.2 패턴
+
+### useEffectEvent (새로운 안정화 API)
+
+`useEffectEvent`는 React 19.2에서 안정화된 API로, Effect 내에서 최신 값을 읽되 의존성 배열에 포함하지 않아도 되는 함수를 만들 때 사용합니다.
+
+```typescript
+'use client';
+
+import { useEffect, useEffectEvent, useState } from 'react';
+
+export default function Component() {
+  const [year, setYear] = useState<number | null>(null);
+
+  // useEffectEvent로 감싸면 의존성 배열에서 제외 가능
+  const updateYear = useEffectEvent(() => {
+    setYear(new Date().getFullYear());
+  });
+
+  useEffect(() => {
+    updateYear(); // eslint 경고 없음
+  }, []); // 빈 배열 가능
+
+  return <p>© {year ?? '2025'}</p>;
+}
+```
+
+**사용 사례:**
+
+- `new Date()` 같은 비결정적 값 처리
+- Effect 내에서 setState를 호출하지만 의존성으로 넣고 싶지 않을 때
+- 최신 props/state 값을 읽되 재실행을 트리거하지 않을 때
+
+### Hydration 안전 패턴
+
+Next.js 16에서는 Hydration 검증이 더 엄격해졌습니다. 클라이언트 전용 값(localStorage, new Date 등)은 다음 패턴을 사용하세요:
+
+```typescript
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function ClientOnlyComponent() {
+  // 초기값을 null로 설정 (서버와 클라이언트 동일)
+  const [themeMode, setThemeMode] = useState<ThemeMode | null>(null);
+
+  // useEffect에서 클라이언트 전용 값 읽기
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    setThemeMode(saved || 'system');
+  }, []);
+
+  // null일 때 로딩 상태 렌더링
+  if (!themeMode) {
+    return <div>Loading...</div>;
+  }
+
+  return <div>Theme: {themeMode}</div>;
 }
 ```
 
@@ -123,28 +184,29 @@ Server Component → Server Action → Mock Data / External API
 ### 1. Server Actions (데이터 페칭 함수)
 
 ```typescript
-// src/entities/post/api/postsActions.ts
+// src/services/posts.ts
 'use server';
 
-import type { Post, GetPostsParams } from '../model';
+import { cacheTag } from 'next/cache';
+import { supabase } from '@/lib/supabase';
+import { PostSchema, mapPostRowToPost } from '@/types/post';
+import type { Post, GetPostsParams } from '@/types/post';
 
 export async function getPosts(params?: GetPostsParams): Promise<Post[]> {
-  // 실제로는 DB나 외부 API 호출
-  // 현재는 Mock 데이터 사용
-  const mockData: Post[] = [{ id: 1, title: 'Post 1', content: 'Content 1' }];
+  'use cache';
+  cacheTag('posts');
 
-  const sort = params?.sort || 'latest';
-  // 정렬 로직...
-
-  return mockData;
+  const { data } = await supabase.from('posts').select('*');
+  const validated = PostSchema.array().parse(data);
+  return validated.map(mapPostRowToPost);
 }
 ```
 
 ### 2. Server Component (정적 페이지 - SSG)
 
 ```typescript
-// src/widgets/post-list/ui/PostListTable.tsx
-import { getPosts } from '@/entities/post';
+// src/app/posts/_components/PostListTable.tsx
+import { getPosts } from '@/services/posts';
 
 export async function PostListTable() {
   const posts = await getPosts({ sort: 'latest' });
@@ -164,13 +226,20 @@ export async function PostListTable() {
 ```typescript
 // src/app/posts/page.tsx
 import { Suspense } from 'react';
-import { PostsPage } from '@/pages/posts';
+import { PostListTable } from './_components/PostListTable';
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PostsPage />
-    </Suspense>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold">포스트</h1>
+        <p className="text-base-content/70">DevNest의 모든 글을 만나보세요</p>
+      </div>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <PostListTable />
+      </Suspense>
+    </div>
   );
 }
 ```
@@ -181,8 +250,9 @@ export default function Page() {
 // 검색/필터링 등 인터랙션이 필요한 경우만 사용
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getPosts } from '@/entities/post';
+import { getPosts } from '@/services/posts';
 
 export function PostSearch() {
   const [search, setSearch] = useState('');

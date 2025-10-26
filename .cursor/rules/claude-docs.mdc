@@ -47,9 +47,6 @@ description: Claude Code 프로젝트 문서 참조
 # 1. Prettier 포맷팅
 pnpm format
 
-# 2. FSD 아키텍처 검사
-pnpm steiger
-
 # 3. Prettier, ESLint 및 TypeScript 검사
 pnpm check
 ```

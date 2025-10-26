@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
 
 import './globals.css';
-import { Providers } from '@/app/providers';
-import { NavProvider } from '@/shared/context';
-import { Header, Sidebar, Footer } from '@/widgets/layout';
+import { Providers } from './providers';
+import { NavProvider } from '@/hooks';
+import { Header, Sidebar, Footer } from './_components';
 
 export const metadata: Metadata = {
   title: {

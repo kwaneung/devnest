@@ -14,7 +14,7 @@ DevNest 프로젝트에서 Supabase PostgreSQL 데이터베이스를 사용하�
 // ✅ 올바른 방법: Server Actions
 'use server';
 
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export async function getPosts() {
   const { data } = await supabase.from('posts').select('*');
@@ -26,7 +26,7 @@ export async function getPosts() {
 // ❌ 잘못된 방법: Client Component에서 직접 접근
 'use client';
 
-import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 function PostList() {
   // 보안 위험! 클라이언트에서 직접 DB 접근
@@ -101,10 +101,10 @@ function PostList() {
   │ }                                                │
   └─────────────────────────────────────────────────┘
                         ↓
-  ┌─ Step 3-5: 삼중 캐싱 전략 ───────────────────────┐
-  │ 1. Page-level ISR (revalidate: 60)             │
-  │ 2. Request-level cache() (React)                │
-  │ 3. Function-level unstable_cache() (Next.js)    │
+  ┌─ Step 3-5: use cache 캐싱 전략 (Next.js 16) ────┐
+  │ 1. 'use cache' 지시문 (함수 레벨)              │
+  │ 2. cacheTag() (태그 기반 무효화)                │
+  │ 3. cacheLife 프로필 (next.config.ts)           │
   └─────────────────────────────────────────────────┘
                         ↓
   ┌─ Step 3-6: JSON 직렬화 ──────────────────────────┐
@@ -181,7 +181,7 @@ pnpm supabase:gen-types
 #### 3. 생성된 타입 사용
 
 ```typescript
-// src/shared/lib/supabase/types.ts (자동 생성)
+// src/lib/supabase/types.ts (자동 생성)
 export type Database = {
   public: {
     Tables: {
@@ -204,7 +204,7 @@ export type Database = {
   };
 };
 
-// src/shared/lib/supabase/client.ts
+// src/lib/supabase/client.ts
 import type { Database } from './types';
 
 export const supabase = createClient<Database>(
@@ -221,7 +221,7 @@ export const supabase = createClient<Database>(
 pnpm supabase:gen-types
 
 # 3. Zod 스키마 업데이트 (필요시)
-# src/entities/post/model/schema.ts 수정
+# src/types/post.ts 수정
 
 # 4. 타입 체크
 pnpm type-check
@@ -242,7 +242,7 @@ Supabase에서 반환된 데이터는 **런타임에 검증이 필요**합니다
 ### Zod 스키마 작성 가이드
 
 ```typescript
-// src/entities/post/model/schema.ts
+// src/types/post.ts
 import { z } from 'zod';
 
 /**
@@ -317,7 +317,7 @@ publishedAt: row.published_at, // 그대로 전달
 ### snake_case → camelCase 변환
 
 ```typescript
-// src/entities/post/model/schema.ts
+// src/types/post.ts
 
 /**
  * Supabase Row를 프론트엔드 Post로 변환
@@ -339,12 +339,12 @@ export function mapPostRowToPost(row: PostRow): Post {
 ### Server Actions에서 사용
 
 ```typescript
-// src/entities/post/api/postsActions.ts
+// src/services/posts.ts
 'use server';
 
 import { z } from 'zod';
-import { supabase } from '@/shared/lib/supabase';
-import { PostSchema, mapPostRowToPost } from '../model';
+import { supabase } from '@/lib/supabase';
+import { PostSchema, mapPostRowToPost } from '@/types/post';
 
 export async function getPosts() {
   // 1. Supabase에서 데이터 가져오기

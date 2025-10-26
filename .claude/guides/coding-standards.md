@@ -51,8 +51,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 // 3. internal (@/)
-import { Button } from '@/shared/ui';
-import { useAuth } from '@/features/auth';
+import { Button } from '@/components/ui';
+import { useNav } from '@/hooks';
 
 // 4. relative (최소화)
 import './styles.css';

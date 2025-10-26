@@ -36,17 +36,17 @@ pnpm dev -- -p 3001
 ## 코드 품질
 
 ```bash
+# Prettier 포맷팅 및 자동 수정
+pnpm format
+
+# Prettier, ESLint 및 TypeScript 검사
+pnpm check
+
 # ESLint 실행
 pnpm lint
 
 # ESLint 자동 수정
 pnpm lint --fix
-
-# FSD 아키텍처 검사
-pnpm steiger
-
-# FSD 감시 모드
-pnpm steiger:watch
 ```
 
 ## Git 워크플로우
@@ -55,7 +55,7 @@ pnpm steiger:watch
 
 - Prettier 자동 포맷팅
 - ESLint 자동 수정
-- Steiger FSD 아키텍처 검사
+- TypeScript 타입 검사
 
 ### 커밋 메시지 (Conventional Commits)
 

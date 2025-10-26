@@ -1,8 +1,8 @@
-# Server Actions 및 API Routes 가이드
+# Server Actions 및 API Routes 가이드 (Next.js 16)
 
 ## 개요
 
-Next.js App Router에서 서버 측 데이터 처리를 위한 **Server Actions**와 **API Routes**의 사용법 가이드입니다.
+Next.js 16 App Router에서 서버 측 데이터 처리를 위한 **Server Actions**와 **API Routes**의 사용법 가이드입니다.
 
 ---
 
@@ -29,11 +29,13 @@ Next.js App Router에서 서버 측 데이터 처리를 위한 **Server Actions*
 ### 예시 코드
 
 ```typescript
-// src/entities/post/api/postsActions.ts
+// src/services/posts.ts
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
-import type { Post, GetPostsParams } from '../model';
+import { revalidatePath, revalidateTag, updateTag, cacheTag } from 'next/cache';
+import { supabase } from '@/lib/supabase';
+import { PostSchema, mapPostRowToPost } from '@/types/post';
+import type { Post, GetPostsParams } from '@/types/post';
 
 /**
  * 포스트 목록을 가져오는 Server Action
@@ -43,7 +45,8 @@ export async function getPosts(params?: GetPostsParams): Promise<Post[]> {
   cacheTag('posts');
 
   const { data } = await supabase.from('posts').select('*');
-  return data;
+  const validated = PostSchema.array().parse(data);
+  return validated.map(mapPostRowToPost);
 }
 
 /**
@@ -55,9 +58,9 @@ export async function createPost(formData: FormData): Promise<void> {
 
   await supabase.from('posts').insert({ title, content });
 
-  // Next.js 캐시 갱신
+  // 즉시 반영 (사용자가 작성한 포스트를 바로 확인)
+  updateTag('posts');
   revalidatePath('/posts');
-  revalidateTag('posts');
 }
 
 /**
@@ -69,9 +72,10 @@ export async function updatePost(id: number, formData: FormData): Promise<void> 
 
   await supabase.from('posts').update({ title, content }).eq('id', id);
 
+  // 즉시 반영 (사용자가 수정한 내용을 바로 확인)
+  updateTag(`post-${id}`);
+  updateTag('posts');
   revalidatePath(`/posts/${id}`);
-  revalidateTag('posts');
-  revalidateTag(`post-${id}`);
 }
 
 /**
@@ -80,8 +84,9 @@ export async function updatePost(id: number, formData: FormData): Promise<void> 
 export async function deletePost(id: number): Promise<void> {
   await supabase.from('posts').delete().eq('id', id);
 
+  // 백그라운드 갱신 (삭제는 점진적 반영 허용)
+  revalidateTag('posts', 'max');
   revalidatePath('/posts');
-  revalidateTag('posts');
 }
 ```
 
@@ -93,7 +98,7 @@ export async function deletePost(id: number): Promise<void> {
 
 ```typescript
 // app/posts/page.tsx
-import { getPosts } from '@/entities/post';
+import { getPosts } from '@/services/posts';
 
 export default async function PostsPage() {
   const posts = await getPosts(); // 직접 호출
@@ -107,7 +112,7 @@ export default async function PostsPage() {
 ```typescript
 'use client';
 
-import { createPost } from '@/entities/post';
+import { createPost } from '@/services/posts';
 
 export function PostForm() {
   return (
@@ -125,7 +130,7 @@ export function PostForm() {
 ```typescript
 'use client';
 
-import { deletePost } from '@/entities/post';
+import { deletePost } from '@/services/posts';
 import { useRouter } from 'next/navigation';
 
 export function DeleteButton({ postId }: { postId: number }) {
@@ -152,7 +157,7 @@ Server Action을 호출할 때 `useTransition`을 사용하면 로딩 상태를 
 'use client';
 
 import { useTransition } from 'react';
-import { createPost } from '@/entities/post';
+import { createPost } from '@/services/posts';
 
 export function PostForm() {
   const [isPending, startTransition] = useTransition();
@@ -181,7 +186,7 @@ export function PostForm() {
 'use client';
 
 import { useFormStatus } from 'react-dom';
-import { createPost } from '@/entities/post';
+import { createPost } from '@/services/posts';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -359,13 +364,13 @@ Database
 ### 파일 구조
 
 ```
-src/entities/post/
-├── api/
-│   ├── postsActions.ts    # ✅ Server Actions (내부 로직)
-└── model/
-    └── types.ts
+src/services/
+└── posts.ts               # ✅ Server Actions (내부 로직)
 
-src/app/api/                     # ⚠️ Webhook, OAuth 등만 유지
+src/types/
+└── post.ts                # 타입 정의
+
+src/app/api/               # ⚠️ Webhook, OAuth 등만 유지
 └── webhook/
     └── route.ts
 ```

@@ -4,8 +4,5 @@
 # Run Prettier and ESLint auto-fix on staged files
 npx lint-staged
 
-# Run steiger architecture check
-pnpm steiger
-
 # Run ESLint and TypeScript check (full project)
 pnpm check
