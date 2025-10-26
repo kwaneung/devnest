@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 
 import { useNav } from '@/hooks';
 
@@ -19,7 +19,7 @@ export function Header() {
    * theme-color 메타 태그 업데이트
    * Next.js Metadata API로 생성된 메타 태그를 클라이언트에서 동적으로 제어
    */
-  const updateThemeColor = useCallback((theme: 'pastel' | 'night') => {
+  const updateThemeColor = (theme: 'pastel' | 'night') => {
     const themeColor = theme === 'night' ? '#1a1a1a' : '#ffffff';
 
     // 1. Metadata API로 생성된 모든 theme-color 메타 태그 제거
@@ -58,41 +58,38 @@ export function Header() {
         }
       }, 300);
     });
-  }, []);
+  };
 
   /**
    * 테마 적용
    * daisyUI data-theme 속성과 theme-color 메타 태그를 동기화
    */
-  const applyTheme = useCallback(
-    (mode: ThemeMode) => {
-      let appliedTheme: 'pastel' | 'night';
+  const applyTheme = (mode: ThemeMode) => {
+    let appliedTheme: 'pastel' | 'night';
 
-      // 테마 결정
-      if (mode === 'system') {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        appliedTheme = prefersDark ? 'night' : 'pastel';
-      } else if (mode === 'light') {
-        appliedTheme = 'pastel';
-      } else {
-        appliedTheme = 'night';
-      }
+    // 테마 결정
+    if (mode === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      appliedTheme = prefersDark ? 'night' : 'pastel';
+    } else if (mode === 'light') {
+      appliedTheme = 'pastel';
+    } else {
+      appliedTheme = 'night';
+    }
 
-      // daisyUI 테마 적용
-      document.documentElement.setAttribute('data-theme', appliedTheme);
+    // daisyUI 테마 적용
+    document.documentElement.setAttribute('data-theme', appliedTheme);
 
-      // theme-color 메타 태그 동기화
-      updateThemeColor(appliedTheme);
+    // theme-color 메타 태그 동기화
+    updateThemeColor(appliedTheme);
 
-      // localStorage 저장
-      try {
-        localStorage.setItem('themeMode', mode);
-      } catch {
-        // localStorage 사용 불가능 시 무시
-      }
-    },
-    [updateThemeColor],
-  );
+    // localStorage 저장
+    try {
+      localStorage.setItem('themeMode', mode);
+    } catch {
+      // localStorage 사용 불가능 시 무시
+    }
+  };
 
   /**
    * 초기 마운트: localStorage에서 테마 복원 및 적용
@@ -118,16 +115,23 @@ export function Header() {
   }, []);
 
   /**
+   * 시스템 테마 적용 (Effect 전용)
+   */
+  const applySystemTheme = useEffectEvent(() => {
+    applyTheme('system');
+  });
+
+  /**
    * 시스템 다크모드 변경 감지
    */
   useEffect(() => {
     if (themeMode === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => applyTheme('system');
+      const handleChange = () => applySystemTheme();
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [themeMode, applyTheme]);
+  }, [themeMode]);
 
   /**
    * 테마 순환: light → dark → system

@@ -30,7 +30,6 @@
 
 - 함수형 컴포넌트 사용
 - Props는 TypeScript 인터페이스로 정의
-- 이벤트 핸들러는 `useCallback` 사용
 - UI는 daisyUI 클래스 우선 사용
 
 ## ESLint 주요 규칙
