@@ -117,6 +117,7 @@ IMPORTANT: 파일 수정(Edit, Write) 작업을 완료한 후에는 항상 `pnpm
 - @.claude/guides/supabase-guide.md - Supabase DB 접근 및 타입 관리
 - @.claude/guides/caching.md - Next.js 16 use cache 캐싱 전략
 - @.claude/guides/server-actions.md - Server Actions 및 API Routes 사용법
+- @.claude/guides/testing.md - 테스트 작성 가이드 (Vitest + Playwright)
 
 ## 빠른 시작
 
@@ -129,4 +130,8 @@ pnpm dev
 
 # 린팅
 pnpm lint
+
+# 테스트 실행
+pnpm test        # 단위 테스트 (watch 모드)
+pnpm test:e2e    # E2E 테스트
 ```
