@@ -118,6 +118,196 @@ devnest/
 └── playwright.config.ts                      # Playwright 설정
 ```
 
+## 테스트 작성 시점 및 방법론
+
+### TDD vs TAD: 언제 무엇을 사용할까?
+
+DevNest 프로젝트에서는 다음과 같은 혼합 접근법을 사용합니다:
+
+```
+TDD (Test-Driven Development) - 테스트 먼저 작성 ✍️
+├─ 단위 테스트 (70%)
+│  └─ 순수 함수, 유틸리티, 비즈니스 로직
+│     예: formatDate(), validateEmail(), Zod 스키마
+└─ 핵심 통합 테스트 (주요 플로우)
+   └─ 중요한 DB/API 연동의 Happy Path
+      예: getPosts() 기본 동작, createPost() 성공 케이스
+
+TAD (Test-After Development) - 개발 후 테스트 작성 🔧
+├─ 나머지 통합 테스트 (엣지 케이스)
+│  └─ 에러 처리, 경계값, 예외 상황
+│     예: 네트워크 실패, 빈 결과, 잘못된 입력
+└─ E2E 테스트 (10%)
+   └─ 주요 사용자 시나리오 (기능 완성 후)
+      예: 로그인 → 포스트 작성 → 게시
+```
+
+### 실무 워크플로우
+
+#### 1. TDD로 시작 (빠르고 확실한 것)
+
+```typescript
+// ✅ STEP 1: 단위 테스트 먼저 작성 (Red)
+describe('formatDate', () => {
+  it('ISO 문자열을 한국어로 변환해야 한다', () => {
+    expect(formatDate('2025-01-15')).toBe('2025년 1월 15일');
+  });
+});
+
+// ✅ STEP 2: 최소 코드로 테스트 통과 (Green)
+export function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+// ✅ STEP 3: 리팩토링
+export function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}
+```
+
+#### 2. 핵심 통합 테스트 (TDD 가능하면 우선)
+
+```typescript
+// ✅ 핵심 플로우는 먼저 작성
+describe('getPosts 핵심 플로우', () => {
+  it('Supabase에서 포스트 목록을 가져와야 한다', async () => {
+    const posts = await getPosts();
+    expect(posts).toHaveLength(expect.any(Number));
+    expect(posts[0]).toMatchObject({
+      id: expect.any(Number),
+      title: expect.any(String),
+    });
+  });
+});
+
+// 구현...
+
+// ⚠️ 개발 중 발견한 엣지 케이스는 나중에 추가 (TAD)
+describe('getPosts 엣지 케이스', () => {
+  it('네트워크 에러 시 재시도해야 한다', async () => {
+    // 개발하면서 발견한 문제 추가
+  });
+
+  it('빈 결과도 정상 처리해야 한다', async () => {
+    mockLimit.mockResolvedValue({ data: [], error: null });
+    const posts = await getPosts();
+    expect(posts).toEqual([]);
+  });
+});
+```
+
+#### 3. UI 컴포넌트 (TAD - 빠른 프로토타이핑)
+
+```typescript
+// 1. 컴포넌트 먼저 개발
+export function LikeButton({ postId, initialLikes }: Props) {
+  const [likes, setLikes] = useState(initialLikes);
+  // ...
+}
+
+// 2. 주요 동작 테스트 추가
+describe('LikeButton', () => {
+  it('클릭 시 좋아요 수가 증가해야 한다', async () => {
+    render(<LikeButton postId={1} initialLikes={10} />);
+    await userEvent.click(screen.getByRole('button'));
+    expect(screen.getByText('11')).toBeInTheDocument();
+  });
+});
+```
+
+#### 4. E2E (TAD - 기능 완성 후)
+
+```typescript
+// 전체 기능 완성 후 사용자 시나리오 검증
+test('사용자는 포스트에 좋아요를 누를 수 있다', async ({ page }) => {
+  await page.goto('/posts/1');
+  await page.getByRole('button', { name: /좋아요/ }).click();
+  await expect(page.getByText('11개')).toBeVisible();
+});
+```
+
+### 테스트 작성 시간 배분
+
+```
+전체 개발 시간 기준:
+
+TDD (60-70% 시간)
+├─ 단위 테스트: 빠른 피드백 (밀리초)
+└─ 핵심 통합: 주요 플로우 검증 (초 단위)
+
+TAD (30-40% 시간)
+├─ 엣지 케이스: 개발 중 발견
+└─ E2E: 기능 완성 후 (분 단위)
+```
+
+### 실무 예시: "포스트 좋아요 기능" 개발
+
+```typescript
+// 🔴 Day 1 - TDD로 시작
+// services/likes.test.ts
+describe('likePost', () => {
+  it('포스트 좋아요 수를 1 증가시켜야 한다', async () => {
+    const result = await likePost(1);
+    expect(result.likes).toBe(11); // ❌ 실패
+  });
+});
+
+// 🟢 구현
+export async function likePost(postId: number) {
+  // 최소 코드
+}
+
+// 🔵 리팩토링
+export async function likePost(postId: number) {
+  // 개선된 코드
+}
+
+// ⚠️ Day 2 - 개발 중 발견한 엣지 케이스 추가 (TAD)
+it('이미 좋아요한 포스트는 에러를 반환해야 한다', async () => {
+  await likePost(1);
+  await expect(likePost(1)).rejects.toThrow('Already liked');
+});
+
+// 🎨 Day 3 - UI 컴포넌트 개발 및 테스트 (TAD)
+// components/LikeButton.tsx 개발 후
+// components/LikeButton.test.tsx 작성
+
+// 🚀 Day 4 - E2E 테스트 (TAD)
+// e2e/likes.spec.ts
+test('사용자는 포스트에 좋아요를 누를 수 있다', async ({ page }) => {
+  // 전체 시나리오 검증
+});
+```
+
+### 핵심 원칙
+
+| 대상                | 접근법 | 이유                               |
+| ------------------- | ------ | ---------------------------------- |
+| 순수 함수/유틸리티  | TDD    | 요구사항 명확, 빠른 피드백         |
+| 비즈니스 로직       | TDD    | 버그 비용 높음, 테스트 가능한 설계 |
+| DB/API 핵심 플로우  | TDD    | 중요한 동작 먼저 검증              |
+| DB/API 엣지 케이스  | TAD    | 개발 중 발견, 복잡도 높음          |
+| UI 컴포넌트         | TAD    | 빠른 프로토타이핑, UI 변경 빈번    |
+| E2E 사용자 시나리오 | TAD    | 전체 기능 완성 후, 느림 (분 단위)  |
+
+### Google 70/20/10 법칙
+
+```
+        ▲
+       /E2E\      10% - TAD (기능 완성 후)
+      /─────\
+     /통합테스트\  20% - TDD (핵심) + TAD (엣지)
+    /────────\
+   /  단위테스트  \ 70% - TDD (무조건 먼저)
+  /──────────────\
+```
+
 ## 작성 가이드
 
 ### 단위 테스트 (Vitest)
