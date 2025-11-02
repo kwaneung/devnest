@@ -14,6 +14,9 @@ export default defineConfig({
     css: true, // CSS 임포트 허용
     include: ['**/*.test.{js,ts,tsx}', '**/*.integration.test.{js,ts,tsx}'], // 단위 + 통합 테스트
     exclude: ['node_modules', 'e2e', '.next', 'out'], // E2E 테스트 제외
+    env: {
+      NODE_ENV: 'development', // 단위/통합 테스트는 development 모드에서 실행
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
