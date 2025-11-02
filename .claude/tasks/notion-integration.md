@@ -57,14 +57,14 @@
 
 **Database 구조:**
 
-| 속성 이름 | 타입         | 설명                    |
-| --------- | ------------ | ----------------------- |
-| Title     | Title        | 제목 (기본)             |
-| Status    | Select       | Draft, Published        |
-| Tags      | Multi-select | React, Next.js, etc.    |
-| Published | Date         | 발행일                  |
-| Excerpt   | Text         | 발췌문 (요약)           |
-| Content   | Page         | 본문 (서브 페이지)      |
+| 속성 이름 | 타입         | 설명                 |
+| --------- | ------------ | -------------------- |
+| Title     | Title        | 제목 (기본)          |
+| Status    | Select       | Draft, Published     |
+| Tags      | Multi-select | React, Next.js, etc. |
+| Published | Date         | 발행일               |
+| Excerpt   | Text         | 발췌문 (요약)        |
+| Content   | Page         | 본문 (서브 페이지)   |
 
 **설정 방법:**
 
@@ -233,7 +233,7 @@ export async function syncNotionToSupabase() {
         {
           onConflict: 'id',
           ignoreDuplicates: false,
-        }
+        },
       );
 
       if (error) {
@@ -374,7 +374,7 @@ export async function GET(request: Request) {
         success: false,
         error: (error as Error).message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -520,14 +520,14 @@ HTML 렌더링
 
 ## ⏱️ 예상 개발 시간
 
-| Phase   | 작업 내용              | 예상 시간 |
-| ------- | ---------------------- | --------- |
-| Phase 1 | Notion 설정 및 SDK     | 30분      |
-| Phase 2 | 동기화 로직 구현       | 2-3시간   |
-| Phase 3 | 수동 동기화 테스트     | 1시간     |
-| Phase 4 | Vercel Cron 자동화     | 1시간     |
-| Phase 5 | 조회수 기능 (선택)     | 1-2시간   |
-| **합계** |                        | **5-8시간** |
+| Phase    | 작업 내용          | 예상 시간   |
+| -------- | ------------------ | ----------- |
+| Phase 1  | Notion 설정 및 SDK | 30분        |
+| Phase 2  | 동기화 로직 구현   | 2-3시간     |
+| Phase 3  | 수동 동기화 테스트 | 1시간       |
+| Phase 4  | Vercel Cron 자동화 | 1시간       |
+| Phase 5  | 조회수 기능 (선택) | 1-2시간     |
+| **합계** |                    | **5-8시간** |
 
 ---
 
