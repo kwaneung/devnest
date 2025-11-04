@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 export function NavSecondary({
@@ -22,6 +23,13 @@ export function NavSecondary({
     icon: Icon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const { setOpenMobile } = useSidebar();
+
+  const handleNavClick = () => {
+    // 모바일에서 사이드바 닫기
+    setOpenMobile(false);
+  };
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -29,7 +37,7 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <Link href={item.url}>
+                <Link href={item.url} onClick={handleNavClick}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>
