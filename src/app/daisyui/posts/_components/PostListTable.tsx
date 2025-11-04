@@ -29,12 +29,12 @@ export async function PostListTable() {
             return (
               <tr key={post.id} className="hover:bg-base-200 cursor-pointer">
                 <td>
-                  <Link href={`/posts/${post.id}`} className="block">
+                  <Link href={`/daisyui/posts/${post.id}`} className="block">
                     {index + 1}
                   </Link>
                 </td>
                 <td>
-                  <Link href={`/posts/${post.id}`} className="block">
+                  <Link href={`/daisyui/posts/${post.id}`} className="block">
                     <div className="font-medium">{post.title}</div>
                     <p className="text-xs text-base-content/60 mt-1 line-clamp-1 md:hidden">
                       {post.excerpt}
@@ -42,7 +42,7 @@ export async function PostListTable() {
                   </Link>
                 </td>
                 <td className="hidden md:table-cell">
-                  <Link href={`/posts/${post.id}`} className="block">
+                  <Link href={`/daisyui/posts/${post.id}`} className="block">
                     <div className="flex flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((tag) => (
                         <span key={tag} className="badge badge-sm badge-ghost">
@@ -53,12 +53,12 @@ export async function PostListTable() {
                   </Link>
                 </td>
                 <td className="hidden sm:table-cell text-sm whitespace-nowrap">
-                  <Link href={`/posts/${post.id}`} className="block">
+                  <Link href={`/daisyui/posts/${post.id}`} className="block">
                     {formattedDate}
                   </Link>
                 </td>
                 <td className="text-right text-sm">
-                  <Link href={`/posts/${post.id}`} className="block">
+                  <Link href={`/daisyui/posts/${post.id}`} className="block">
                     {post.viewCount.toLocaleString()}
                   </Link>
                 </td>

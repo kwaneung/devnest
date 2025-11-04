@@ -1,5 +1,5 @@
 import { getPosts } from '@/services/posts';
-import { PostCard } from '@/components/PostCard';
+import { PostCard } from './PostCard';
 
 export async function PopularPosts() {
   const posts = await getPosts({ sort: 'popular', limit: 3 });

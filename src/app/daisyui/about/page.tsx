@@ -167,7 +167,7 @@ export default function AboutPage() {
             <div className="divider"></div>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/posts" className="btn btn-primary">
+              <Link href="/daisyui/posts" className="btn btn-primary">
                 글 보러가기
               </Link>
               <a href="mailto:kwaneung.kim@outlook.com" className="btn btn-secondary">

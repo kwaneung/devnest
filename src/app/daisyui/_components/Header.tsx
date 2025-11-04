@@ -168,7 +168,7 @@ export function Header() {
             />
           </svg>
         </label>
-        <Link href="/" className="btn btn-ghost text-lg font-semibold">
+        <Link href="/daisyui" className="btn btn-ghost text-lg font-semibold">
           DevNest Blog
         </Link>
       </div>

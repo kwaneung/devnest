@@ -19,7 +19,7 @@ export function Sidebar() {
   return (
     <aside className="min-h-full w-48 md:w-52 lg:w-56 bg-base-100 overflow-y-auto">
       <div className="navbar bg-base-100 border-b border-base-300 px-4">
-        <Link href="/" className="btn btn-ghost text-lg font-semibold" onClick={closeDrawer}>
+        <Link href="/daisyui" className="btn btn-ghost text-lg font-semibold" onClick={closeDrawer}>
           DevNest Blog
         </Link>
       </div>

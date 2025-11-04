@@ -1,11 +1,12 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SiteHeader } from '@/components/site-header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 import './globals.css';
 import { Providers } from './providers';
-import { NavProvider } from '@/hooks';
-import { Header, Sidebar, Footer } from './_components';
 
 export const metadata: Metadata = {
   title: {
@@ -54,38 +55,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  // 1. localStorage에서 저장된 테마 모드 확인
-                  const savedMode = localStorage.getItem('themeMode');
-
-                  if (savedMode === 'light') {
-                    document.documentElement.setAttribute('data-theme', 'pastel');
-                    return;
-                  }
-
-                  if (savedMode === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'night');
-                    return;
-                  }
-
-                  // 2. system 또는 없으면 OS 다크모드 설정 확인
-                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  const theme = prefersDark ? 'night' : 'pastel';
-                  document.documentElement.setAttribute('data-theme', theme);
-                } catch {
-                  // 3. 실패 시 기본값 (pastel)
-                  document.documentElement.setAttribute('data-theme', 'pastel');
-                }
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="antialiased min-h-dvh">
         <NextTopLoader
           color="#FF6B6B"
@@ -99,35 +68,20 @@ export default function RootLayout({
           zIndex={9999}
         />
         <Providers>
-          <NavProvider>
-            <a
-              href="#main"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 btn btn-sm"
-            >
-              본문 바로가기
-            </a>
-            <div className="drawer">
-              <input id="app-drawer" type="checkbox" className="drawer-toggle" />
-              <div className="drawer-content flex flex-col min-h-dvh">
-                <Header />
-                <main
-                  id="main"
-                  className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full"
-                >
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              <div className="drawer-side z-60">
-                <label
-                  htmlFor="app-drawer"
-                  aria-label="close sidebar"
-                  className="drawer-overlay"
-                ></label>
-                <Sidebar />
-              </div>
-            </div>
-          </NavProvider>
+          <SidebarProvider
+            style={
+              {
+                '--sidebar-width': 'calc(var(--spacing) * 72)',
+                '--header-height': 'calc(var(--spacing) * 12)',
+              } as React.CSSProperties
+            }
+          >
+            <AppSidebar variant="inset" />
+            <SidebarInset>
+              <SiteHeader />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
         </Providers>
         <Analytics />
       </body>

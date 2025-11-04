@@ -6,11 +6,12 @@
 
 ## 전략
 
-**라우팅 그룹을 활용한 병렬 구축 전략**
+**별도 라우팅 경로를 활용한 병렬 구축 전략**
 
-- `(daisyui)` 그룹: 기존 화면 유지
-- `(shadcn)` 그룹: 새로운 shadcn/ui 화면 구축
-- 최종 결정 후 선택한 그룹만 남기고 다른 그룹 삭제
+- `daisyui/` 폴더: 기존 화면 유지 (URL: `/daisyui`)
+- `shadcn/` 폴더: 새로운 shadcn/ui 화면 구축 (URL: `/shadcn`)
+- 루트 페이지 `/`에서 두 버전 선택 가능
+- 최종 결정 후 선택한 폴더만 남기고 루트로 이동
 
 ## Phase 1: 환경 설정
 
@@ -52,8 +53,13 @@ pnpm dlx shadcn@latest add button card input badge avatar separator sheet naviga
 
 ```
 src/app/
-├── (daisyui)/              # 기존 화면 (daisyUI)
-│   ├── layout.tsx          # 기존 layout 이동
+├── page.tsx                # 선택 페이지 (루트 /)
+├── layout.tsx              # 루트 layout (최소한)
+├── providers.tsx           # 공통
+├── globals.css            # 공통 스타일 (daisyUI + shadcn 모두 포함)
+│
+├── daisyui/               # 기존 화면 (URL: /daisyui)
+│   ├── layout.tsx          # daisyUI 전용 layout
 │   ├── page.tsx            # 기존 홈페이지
 │   ├── about/
 │   │   └── page.tsx
@@ -61,29 +67,26 @@ src/app/
 │   │   ├── page.tsx
 │   │   └── [id]/
 │   │       └── page.tsx
-│   └── _components/        # 기존 공통 컴포넌트
+│   └── _components/        # daisyUI 전용 컴포넌트
 │       ├── Header.tsx
 │       ├── Sidebar.tsx
 │       ├── Footer.tsx
 │       └── ...
 │
-├── (shadcn)/               # 신규 화면 (shadcn/ui)
-│   ├── layout.tsx          # shadcn 전용 layout
-│   ├── page.tsx            # shadcn 홈페이지
-│   ├── about/
-│   │   └── page.tsx
-│   ├── posts/
-│   │   ├── page.tsx
-│   │   └── [id]/
-│   │       └── page.tsx
-│   └── _components/        # shadcn 전용 컴포넌트
-│       ├── Header.tsx
-│       ├── Sidebar.tsx
-│       ├── Footer.tsx
-│       └── ...
-│
-└── globals.css             # daisyUI 전역 스타일 (기존)
-└── globals-shadcn.css      # shadcn/ui 전역 스타일 (신규)
+└── shadcn/                # 신규 화면 (URL: /shadcn)
+    ├── layout.tsx          # shadcn 전용 layout
+    ├── page.tsx            # shadcn 홈페이지
+    ├── about/
+    │   └── page.tsx
+    ├── posts/
+    │   ├── page.tsx
+    │   └── [id]/
+    │       └── page.tsx
+    └── _components/        # shadcn 전용 컴포넌트
+        ├── Header.tsx
+        ├── Sidebar.tsx
+        ├── Footer.tsx
+        └── ...
 ```
 
 ### 2.2 라우팅 경로
@@ -137,22 +140,23 @@ export default function RootPage() {
 
 ---
 
-## Phase 3: 기존 페이지를 (daisyui) 그룹으로 이동
+## Phase 3: 기존 페이지를 daisyui 폴더로 이동
 
 ### 3.1 이동할 파일 목록
 
 1. **Layout 및 Provider:**
-   - `app/layout.tsx` → `app/(daisyui)/layout.tsx`
+   - `app/layout.tsx` → 루트 layout으로 간소화 (선택 페이지용)
+   - 기존 layout 복사 → `app/daisyui/layout.tsx`
    - `app/providers.tsx` → 그대로 유지 (공통)
 
 2. **페이지:**
-   - `app/page.tsx` → `app/(daisyui)/page.tsx`
-   - `app/about/page.tsx` → `app/(daisyui)/about/page.tsx`
-   - `app/posts/page.tsx` → `app/(daisyui)/posts/page.tsx`
-   - `app/posts/[id]/page.tsx` → `app/(daisyui)/posts/[id]/page.tsx`
+   - `app/page.tsx` → 선택 페이지로 변경
+   - 기존 홈페이지 복원 → `app/daisyui/page.tsx`
+   - `app/about/` → `app/daisyui/about/`
+   - `app/posts/` → `app/daisyui/posts/`
 
 3. **컴포넌트:**
-   - `app/_components/` → `app/(daisyui)/_components/`
+   - `app/_components/` → `app/daisyui/_components/`
 
 4. **서비스 레이어:**
    - `src/services/` → 그대로 유지 (공통, 재사용)
@@ -163,23 +167,23 @@ export default function RootPage() {
 
 이동 후 모든 파일에서 import 경로 확인 및 수정:
 
-- `@/app/_components/...` → `@/app/(daisyui)/_components/...`
+- `app/daisyui/layout.tsx`에서 `../globals.css`, `../providers` 사용
 - 절대 경로(`@/...`)를 사용 중이므로 대부분 수정 불필요
 
 ---
 
-## Phase 4: (shadcn) 그룹에 새 layout 생성
+## Phase 4: shadcn 폴더에 새 layout 생성
 
 ### 4.1 shadcn 전용 layout 생성
 
-**파일: `app/(shadcn)/layout.tsx`**
+**파일: `app/shadcn/layout.tsx`**
 
 ```typescript
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
 
-import '../globals-shadcn.css'; // shadcn 전용 스타일
+import '../globals.css'; // 공통 스타일
 import { Providers } from '../providers';
 import { NavProvider } from '@/hooks';
 import { Header, Sidebar, Footer } from './_components';
@@ -285,7 +289,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 **daisyUI 버전:**
 
 ```typescript
-// src/app/(daisyui)/_components/PostCard.tsx
+// src/app/daisyui/_components/PostCard.tsx
 <article className="card bg-base-100 shadow-lg ...">
   <div className="card-body">
     <h2 className="card-title">{post.title}</h2>
@@ -297,7 +301,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 **shadcn/ui 버전:**
 
 ```typescript
-// src/app/(shadcn)/_components/PostCard.tsx
+// src/app/shadcn/_components/PostCard.tsx
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -363,10 +367,10 @@ import { Badge } from '@/components/ui/badge';
 
 ### 7.1 shadcn/ui 선택 시
 
-1. **(daisyui) 그룹 전체 삭제**
+1. **daisyui 폴더 전체 삭제**
 
    ```bash
-   rm -rf src/app/(daisyui)
+   rm -rf src/app/daisyui
    ```
 
 2. **daisyUI 의존성 제거**
@@ -383,9 +387,10 @@ import { Badge } from '@/components/ui/badge';
    @plugin "daisyui/theme" { ... }
    ```
 
-4. **(shadcn) 그룹을 루트로 이동**
-   - `app/(shadcn)/*` → `app/*`
+4. **shadcn 폴더를 루트로 이동**
+   - `app/shadcn/*` → `app/*`
    - 라우팅 경로 정규화 (`/shadcn/...` → `/...`)
+   - `app/page.tsx` 선택 페이지 삭제
 
 5. **daisyUI 가이드 삭제**
 
@@ -398,10 +403,10 @@ import { Badge } from '@/components/ui/badge';
 
 ### 7.2 daisyUI 유지 시
 
-1. **(shadcn) 그룹 전체 삭제**
+1. **shadcn 폴더 전체 삭제**
 
    ```bash
-   rm -rf src/app/(shadcn)
+   rm -rf src/app/shadcn
    ```
 
 2. **shadcn/ui 관련 의존성 제거**
@@ -417,12 +422,23 @@ import { Badge } from '@/components/ui/badge';
    rm -rf src/components/ui
    rm src/lib/utils.ts
    rm components.json
-   rm src/app/globals-shadcn.css
+   rm .mcp.json
    ```
 
-4. **(daisyui) 그룹을 루트로 이동**
-   - `app/(daisyui)/*` → `app/*`
+4. **globals.css에서 shadcn CSS 변수 제거**
+
+   ```css
+   /* 삭제 */
+   @custom-variant dark (&:is(.dark *));
+   @layer base { ... }
+   :root { ... }
+   .dark { ... }
+   ```
+
+5. **daisyui 폴더를 루트로 이동**
+   - `app/daisyui/*` → `app/*`
    - 라우팅 경로 정규화 (`/daisyui/...` → `/...`)
+   - `app/page.tsx` 선택 페이지 삭제
 
 ---
 
@@ -454,19 +470,26 @@ import { Badge } from '@/components/ui/badge';
 
 ### Phase 1: 환경 설정
 
-- [ ] `pnpm dlx shadcn@latest init` 실행 및 초기 설정 완료
+- [x] `pnpm dlx shadcn@latest init` 실행 및 초기 설정 완료
+- [x] `pnpm dlx shadcn@latest mcp init --client claude` MCP 서버 설정 완료
 - [ ] shadcn 기본 컴포넌트 설치 (button, card, input, badge, avatar, separator, sheet, navigation-menu)
 
-### Phase 2-3: 라우팅 그룹 구조
+### Phase 2-3: 라우팅 구조 및 파일 이동
 
-- [ ] (daisyui) 폴더 생성
-- [ ] 기존 파일 이동
-- [ ] import 경로 수정 확인
+- [x] 루트 페이지를 선택 페이지로 변경
+- [x] 루트 layout 간소화
+- [x] daisyui 폴더 생성
+- [x] 기존 layout을 daisyui/layout.tsx로 복사
+- [x] 기존 \_components를 daisyui/\_components로 이동
+- [x] 기존 about, posts를 daisyui/ 폴더로 이동
+- [x] 기존 홈페이지를 daisyui/page.tsx로 복원
+- [x] import 경로 수정 완료
+- [x] 코드 품질 검증 통과
 
 ### Phase 4: shadcn layout
 
-- [ ] (shadcn)/layout.tsx 생성
-- [ ] 테마 시스템 구성
+- [ ] shadcn/layout.tsx 생성
+- [ ] 테마 시스템 구성 (선택)
 
 ### Phase 5: 페이지 구현
 

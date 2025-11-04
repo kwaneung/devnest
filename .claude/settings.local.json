@@ -6,7 +6,9 @@
       "Bash(pnpm format:*)",
       "Bash(pnpm build)",
       "Bash(find:*)",
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm dlx shadcn@latest add:*)",
+      "Bash(pnpm add:*)"
     ],
     "deny": [],
     "ask": []
