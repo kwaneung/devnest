@@ -16,7 +16,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-export function NavMain2({
+export function NavProjects({
   items,
 }: {
   items: {
@@ -39,7 +39,7 @@ export function NavMain2({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible

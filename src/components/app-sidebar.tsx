@@ -2,28 +2,11 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
-} from '@tabler/icons-react';
-import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
+import { IconInnerShadowTop } from '@tabler/icons-react';
+import { Archive, Code2, FileText, Folder, HelpCircle, Home, Search, Settings } from 'lucide-react';
 
-import { NavDocuments } from '@/components/nav-documents';
 import { NavMain } from '@/components/nav-main';
-import { NavMain2 } from '@/components/nav-main2';
+import { NavProjects } from '@/components/nav-projects';
 import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -38,204 +21,111 @@ import {
 
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: 'Kwaneung Kim',
+    email: 'kwaneung.kim@outlook.com',
+    avatar: '/avatars/user.jpg',
   },
   navMain: [
     {
+      title: 'Home',
+      url: '/',
+      icon: Home as any,
+    },
+    {
+      title: 'Posts',
+      url: '/posts',
+      icon: FileText as any,
+    },
+    {
+      title: 'Snippets',
+      url: '/snippets',
+      icon: Code2 as any,
+    },
+    {
       title: 'Dashboard',
       url: '/dashboard',
-      icon: IconDashboard,
-    },
-    {
-      title: 'Lifecycle',
-      url: '#',
-      icon: IconListDetails,
-    },
-    {
-      title: 'Analytics',
-      url: '#',
-      icon: IconChartBar,
-    },
-    {
-      title: 'Projects',
-      url: '#',
-      icon: IconFolder,
-    },
-    {
-      title: 'Team',
-      url: '#',
-      icon: IconUsers,
+      icon: Folder as any,
     },
   ],
-  navMain2: [
+  navProjects: [
     {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
+      title: 'DevNest Blog',
+      url: '/projects/devnest-blog',
+      icon: Folder,
       items: [
         {
-          title: 'History',
-          url: '#',
+          title: 'Overview',
+          url: '/projects/devnest-blog/overview',
         },
         {
-          title: 'Starred',
-          url: '#',
+          title: 'Features',
+          url: '/projects/devnest-blog/features',
         },
         {
-          title: 'Settings',
-          url: '#',
+          title: 'Demo',
+          url: '/projects/devnest-blog/demo',
         },
       ],
     },
     {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
+      title: 'E-Commerce Platform',
+      url: '/projects/ecommerce',
+      icon: Folder,
       items: [
         {
-          title: 'Genesis',
-          url: '#',
+          title: 'Overview',
+          url: '/projects/ecommerce/overview',
         },
         {
-          title: 'Explorer',
-          url: '#',
+          title: 'Tech Stack',
+          url: '/projects/ecommerce/tech-stack',
         },
         {
-          title: 'Quantum',
-          url: '#',
+          title: 'Demo',
+          url: '/projects/ecommerce/demo',
         },
       ],
     },
     {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
+      title: 'Task Manager',
+      url: '/projects/task-manager',
+      icon: Folder,
       items: [
         {
-          title: 'Introduction',
-          url: '#',
+          title: 'Overview',
+          url: '/projects/task-manager/overview',
         },
         {
-          title: 'Get Started',
-          url: '#',
+          title: 'Architecture',
+          url: '/projects/task-manager/architecture',
         },
         {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  navClouds: [
-    {
-      title: 'Capture',
-      icon: IconCamera,
-      isActive: true,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Proposal',
-      icon: IconFileDescription,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Prompts',
-      icon: IconFileAi,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
+          title: 'Demo',
+          url: '/projects/task-manager/demo',
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: 'Settings',
-      url: '#',
-      icon: IconSettings,
-    },
-    {
-      title: 'Get Help',
-      url: '#',
-      icon: IconHelp,
-    },
-    {
       title: 'Search',
-      url: '#',
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: 'Data Library',
-      url: '#',
-      icon: IconDatabase,
+      url: '/search',
+      icon: Search as any,
     },
     {
-      name: 'Reports',
-      url: '#',
-      icon: IconReport,
+      title: 'Archive',
+      url: '/archive',
+      icon: Archive as any,
     },
     {
-      name: 'Word Assistant',
-      url: '#',
-      icon: IconFileWord,
+      title: 'Settings',
+      url: '/settings',
+      icon: Settings as any,
+    },
+    {
+      title: 'Help',
+      url: '/help',
+      icon: HelpCircle as any,
     },
   ],
 };
@@ -257,8 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavMain2 items={data.navMain2} />
-        <NavDocuments items={data.documents} />
+        <NavProjects items={data.navProjects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
