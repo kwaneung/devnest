@@ -23,6 +23,7 @@ export const PostSchema = z.object({
   view_count: z.number().int().nonnegative().default(0),
   created_at: z.iso.datetime({ offset: true }),
   updated_at: z.iso.datetime({ offset: true }),
+  status: z.enum(['Published', 'Draft', 'Archived']).default('Published'),
 });
 
 /**
@@ -45,6 +46,7 @@ export interface Post {
   publishedAt: string; // ISO 8601 with timezone offset (예: "2025-10-01T09:00:00+00:00")
   tags: string[];
   viewCount: number;
+  status: 'Published' | 'Draft' | 'Archived';
 }
 
 /**
@@ -74,6 +76,7 @@ export function mapPostRowToPost(row: PostRow): Post {
     publishedAt: row.published_at, // 이미 ISO 8601 문자열
     tags: row.tags,
     viewCount: row.view_count,
+    status: row.status,
   };
 }
 

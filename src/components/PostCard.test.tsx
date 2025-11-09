@@ -15,6 +15,7 @@ describe('PostCard', () => {
     publishedAt: '2025-10-31T00:00:00.000Z',
     tags: ['React', 'TypeScript', 'Testing', 'Vitest'],
     viewCount: 1234,
+    status: 'Published',
   };
 
   it('포스트 정보가 올바르게 렌더링되어야 한다', () => {

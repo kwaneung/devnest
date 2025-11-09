@@ -23,6 +23,7 @@ describe('PostSchema', () => {
     view_count: 100,
     created_at: '2025-10-31T09:00:00+00:00',
     updated_at: '2025-10-31T09:00:00+00:00',
+    status: 'Published',
   };
 
   describe('유효한 데이터 검증', () => {
@@ -147,6 +148,56 @@ describe('PostSchema', () => {
       expect(result.success).toBe(true);
     });
   });
+
+  describe('status 검증', () => {
+    it('Published 상태를 허용해야 한다', () => {
+      const publishedPost = { ...validPost, status: 'Published' as const };
+      const result = PostSchema.safeParse(publishedPost);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.status).toBe('Published');
+      }
+    });
+
+    it('Draft 상태를 허용해야 한다', () => {
+      const draftPost = { ...validPost, status: 'Draft' as const };
+      const result = PostSchema.safeParse(draftPost);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.status).toBe('Draft');
+      }
+    });
+
+    it('Archived 상태를 허용해야 한다', () => {
+      const archivedPost = { ...validPost, status: 'Archived' as const };
+      const result = PostSchema.safeParse(archivedPost);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.status).toBe('Archived');
+      }
+    });
+
+    it('잘못된 status 값을 거부해야 한다', () => {
+      const invalidStatuses = ['published', 'draft', 'archived', 'Pending', 'Active', ''];
+
+      invalidStatuses.forEach((status) => {
+        const invalidPost = { ...validPost, status };
+        const result = PostSchema.safeParse(invalidPost);
+
+        expect(result.success).toBe(false);
+      });
+    });
+
+    it('status가 없으면 기본값 Published를 설정해야 한다', () => {
+      const postWithoutStatus = { ...validPost, status: undefined };
+      const result = PostSchema.parse(postWithoutStatus);
+
+      expect(result.status).toBe('Published');
+    });
+  });
 });
 
 describe('mapPostRowToPost', () => {
@@ -162,6 +213,7 @@ describe('mapPostRowToPost', () => {
       view_count: 42,
       created_at: '2025-10-31T09:00:00+00:00',
       updated_at: '2025-10-31T09:00:00+00:00',
+      status: 'Published',
     };
 
     const expected: Post = {
@@ -173,6 +225,7 @@ describe('mapPostRowToPost', () => {
       publishedAt: '2025-10-31T09:00:00+00:00',
       tags: ['tag1'],
       viewCount: 42,
+      status: 'Published',
     };
 
     const result = mapPostRowToPost(row);
@@ -192,6 +245,7 @@ describe('mapPostRowToPost', () => {
       view_count: 0,
       created_at: '2025-10-31T09:00:00+09:00',
       updated_at: '2025-10-31T09:00:00+09:00',
+      status: 'Published',
     };
 
     const result = mapPostRowToPost(row);
@@ -212,6 +266,7 @@ describe('mapPostRowToPost', () => {
       view_count: 0,
       created_at: '2025-10-31T09:00:00+00:00',
       updated_at: '2025-10-31T09:00:00+00:00',
+      status: 'Published',
     };
 
     const result = mapPostRowToPost(row);
@@ -227,6 +282,7 @@ describe('mapPostRowToPost', () => {
       'publishedAt',
       'tags',
       'viewCount',
+      'status',
     ]);
   });
 });

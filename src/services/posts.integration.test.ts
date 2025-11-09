@@ -28,6 +28,7 @@ const mockPostsData: PostRow[] = [
     view_count: 100,
     created_at: '2025-10-31T09:00:00+00:00',
     updated_at: '2025-10-31T09:00:00+00:00',
+    status: 'Published',
   },
   {
     id: 2,
@@ -40,6 +41,7 @@ const mockPostsData: PostRow[] = [
     view_count: 50,
     created_at: '2025-10-30T09:00:00+00:00',
     updated_at: '2025-10-30T09:00:00+00:00',
+    status: 'Published',
   },
 ];
 
