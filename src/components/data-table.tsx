@@ -29,9 +29,9 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
-import { z } from 'zod';
 
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DataTableItem } from './data-table.types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -77,17 +77,7 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const schema = z.object({
-  id: z.number(),
-  title: z.string(),
-  tags: z.array(z.string()),
-  status: z.string(),
-  publishedAt: z.string(),
-  viewCount: z.number(),
-  author: z.string(),
-});
-
-const columns: ColumnDef<z.infer<typeof schema>>[] = [
+const columns: ColumnDef<DataTableItem>[] = [
   {
     accessorKey: 'title',
     header: 'Title',
@@ -202,16 +192,16 @@ const categories = [
   {
     value: 'react-next',
     label: 'React/Next',
-    filter: (item: z.infer<typeof schema>) =>
-      item.tags.some((tag) =>
+    filter: (item: DataTableItem) =>
+      item.tags.some((tag: string) =>
         ['React', 'Next.js', 'Server Actions', 'Server Components'].includes(tag),
       ),
   },
   {
     value: 'core-tech',
     label: 'Core Tech',
-    filter: (item: z.infer<typeof schema>) =>
-      item.tags.some((tag) =>
+    filter: (item: DataTableItem) =>
+      item.tags.some((tag: string) =>
         ['TypeScript', 'JavaScript', 'CSS', 'HTML', 'Performance', 'Optimization', 'Web'].includes(
           tag,
         ),
@@ -220,8 +210,8 @@ const categories = [
   {
     value: 'devops',
     label: 'DevOps',
-    filter: (item: z.infer<typeof schema>) =>
-      item.tags.some((tag) =>
+    filter: (item: DataTableItem) =>
+      item.tags.some((tag: string) =>
         [
           'Docker',
           'CI/CD',
@@ -235,7 +225,7 @@ const categories = [
   },
 ];
 
-export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
+export function DataTable({ data }: { data: DataTableItem[] }) {
   const [activeCategory, setActiveCategory] = React.useState('all');
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -244,7 +234,7 @@ export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [selectedItem, setSelectedItem] = React.useState<z.infer<typeof schema> | null>(null);
+  const [selectedItem, setSelectedItem] = React.useState<DataTableItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   // Filter data based on active category
@@ -502,7 +492,7 @@ function EditDrawer({
   open,
   onOpenChange,
 }: {
-  item: z.infer<typeof schema> | null;
+  item: DataTableItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
