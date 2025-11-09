@@ -311,7 +311,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
             </TabsTrigger>
           ))}
         </TabsList>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 md:flex">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -349,7 +349,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
         >
           <div className="overflow-hidden rounded-lg border">
             <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
+              <TableHeader className="bg-muted sticky top-0 z-10 hidden md:table-header-group">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -367,12 +367,121 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
               <TableBody>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        window.location.href = `/posts/${row.original.id}`;
+                      }}
+                    >
+                      {/* Desktop view: 기존 테이블 레이아웃 */}
+                      <TableCell className="hidden md:table-cell">
+                        <div className="font-medium">{row.original.title}</div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex flex-wrap gap-1">
+                          {row.original.tags.slice(0, 3).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-muted-foreground px-1.5"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge variant="outline" className="text-muted-foreground px-1.5">
+                          {row.original.status === 'Published' ? (
+                            <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
+                          ) : (
+                            <IconLoader />
+                          )}
+                          {row.original.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="text-right text-sm">
+                          {new Date(row.original.publishedAt).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                          })}
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="text-right text-sm">
+                          {row.original.viewCount.toLocaleString()}
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="text-sm">{row.original.author}</div>
+                      </TableCell>
+                      <TableCell
+                        className="hidden md:table-cell"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                              size="icon"
+                            >
+                              <IconDotsVertical />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-32">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedItem(row.original);
+                                setIsDrawerOpen(true);
+                              }}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+                            <DropdownMenuItem>Favorite</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+
+                      {/* Mobile view: 카드 레이아웃 */}
+                      <TableCell className="md:hidden" colSpan={columns.length}>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="flex flex-col gap-2 p-2 hover:bg-muted/50 transition-colors"
+                        >
+                          {/* 상단 영역: title */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1 truncate font-medium">
+                              {row.original.title}
+                            </div>
+                          </div>
+
+                          {/* 하단 영역: author, published, views */}
+                          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                            <span>{row.original.author}</span>
+                            <span>•</span>
+                            <span>
+                              {new Date(row.original.publishedAt).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                              })}
+                            </span>
+                            <span>•</span>
+                            <span>{row.original.viewCount.toLocaleString()} views</span>
+                          </div>
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
