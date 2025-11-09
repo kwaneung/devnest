@@ -23,7 +23,7 @@ const data = {
   user: {
     name: 'Kwaneung Kim',
     email: 'kwaneung.kim@outlook.com',
-    avatar: '/avatars/user.jpg',
+    avatar: '/dev-jeans-kt.png',
   },
   navMain: [
     {
@@ -40,11 +40,6 @@ const data = {
       title: 'Snippets',
       url: '/snippets',
       icon: Code2 as any,
-    },
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: Folder as any,
     },
   ],
   navProjects: [
