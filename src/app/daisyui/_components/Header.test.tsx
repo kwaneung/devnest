@@ -120,7 +120,7 @@ describe('Header', () => {
     render(<Header />);
 
     const homeLink = screen.getByRole('link', { name: 'DevNest Blog' });
-    expect(homeLink).toHaveAttribute('href', '/');
+    expect(homeLink).toHaveAttribute('href', '/daisyui');
   });
 
   it('네비게이션 링크가 올바른 href를 가져야 한다', () => {
