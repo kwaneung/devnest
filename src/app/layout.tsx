@@ -10,7 +10,7 @@ import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: {
-    default: 'DevNest | 프론트엔드 개발 블로그',
+    default: 'DevNest | Home',
     template: 'DevNest | %s',
   },
   description: '프론트엔드 개발과 아키텍처에 대한 인사이트를 공유하는 개발 블로그입니다.',

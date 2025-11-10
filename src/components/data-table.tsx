@@ -347,7 +347,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
           value={category.value}
           className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
         >
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-lg border [&_[data-slot=table-container]]:overflow-x-hidden md:[&_[data-slot=table-container]]:overflow-x-auto">
             <Table>
               <TableHeader className="bg-muted sticky top-0 z-10 hidden md:table-header-group">
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -454,7 +454,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
                       </TableCell>
 
                       {/* Mobile view: 카드 레이아웃 */}
-                      <TableCell className="md:hidden" colSpan={columns.length}>
+                      <TableCell className="max-w-0 md:hidden" colSpan={columns.length}>
                         <Link
                           href={`/posts/${row.original.id}`}
                           className="flex flex-col gap-2 p-2 hover:bg-muted/50 transition-colors"
