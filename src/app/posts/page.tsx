@@ -2,6 +2,11 @@ import { Suspense } from 'react';
 
 import { DataTable } from '@/components/data-table';
 import { getPosts } from '@/services/posts';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Posts',
+};
 
 export default async function Page() {
   // 동적 데이터 가져오기
