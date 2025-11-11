@@ -32,8 +32,10 @@ export function SectionCards({ posts }: SectionCardsProps) {
             <Card className="@container/card cursor-pointer transition-all hover:shadow-lg">
               <CardHeader>
                 <CardDescription>{post.author}</CardDescription>
-                <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl line-clamp-2">
-                  {post.title}
+                <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl">
+                  <div className="line-clamp-2 min-h-[3.5rem] @[250px]/card:min-h-[4.5rem]">
+                    {post.title}
+                  </div>
                 </CardTitle>
                 <CardAction>
                   <Badge variant="outline">
@@ -43,7 +45,7 @@ export function SectionCards({ posts }: SectionCardsProps) {
                 </CardAction>
               </CardHeader>
               <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                <div className="line-clamp-2 font-medium">{post.excerpt}</div>
+                <div className="line-clamp-2 min-h-[2.5rem] font-medium">{post.excerpt}</div>
                 <div className="text-muted-foreground">{formattedDate}</div>
               </CardFooter>
             </Card>
