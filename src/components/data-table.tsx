@@ -367,57 +367,80 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
               <TableBody>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        window.location.href = `/posts/${row.original.id}`;
-                      }}
-                    >
+                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                       {/* Desktop view: 기존 테이블 레이아웃 */}
                       <TableCell className="hidden md:table-cell">
-                        <div className="font-medium">{row.original.title}</div>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block font-medium hover:text-primary hover:underline"
+                        >
+                          {row.original.title}
+                        </Link>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {row.original.tags.slice(0, 3).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="outline"
-                              className="text-muted-foreground px-1.5"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="flex flex-wrap gap-1">
+                            {row.original.tags.slice(0, 3).map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="text-muted-foreground px-1.5"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </Link>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline" className="text-muted-foreground px-1.5">
-                          {row.original.status === 'Published' ? (
-                            <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-                          ) : (
-                            <IconLoader />
-                          )}
-                          {row.original.status}
-                        </Badge>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <Badge variant="outline" className="text-muted-foreground px-1.5">
+                            {row.original.status === 'Published' ? (
+                              <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
+                            ) : (
+                              <IconLoader />
+                            )}
+                            {row.original.status}
+                          </Badge>
+                        </Link>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="text-right text-sm">
-                          {new Date(row.original.publishedAt).toLocaleDateString('ko-KR', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                          })}
-                        </div>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-right text-sm">
+                            {new Date(row.original.publishedAt).toLocaleDateString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                            })}
+                          </div>
+                        </Link>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="text-right text-sm">
-                          {row.original.viewCount.toLocaleString()}
-                        </div>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-right text-sm">
+                            {row.original.viewCount.toLocaleString()}
+                          </div>
+                        </Link>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="text-sm">{row.original.author}</div>
+                        <Link
+                          href={`/posts/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-sm">{row.original.author}</div>
+                        </Link>
                       </TableCell>
                       <TableCell
                         className="hidden md:table-cell"
