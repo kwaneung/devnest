@@ -14,11 +14,32 @@ export function SiteHeader() {
     const updateTitle = () => {
       const fullTitle = document.title;
       const title = fullTitle.split('|')[1]?.trim();
-      setPageTitle(title);
+      if (title) {
+        setPageTitle(title);
+      }
     };
 
+    // 초기 타이틀 설정 시도
     updateTitle();
-  }, [pathname]); // pathname이 변경될 때마다 실행
+
+    // MutationObserver로 <head> 태그의 변경 감지
+    const headElement = document.querySelector('head');
+    if (!headElement) return;
+
+    const observer = new MutationObserver(() => {
+      updateTitle();
+    });
+
+    observer.observe(headElement, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [pathname]);
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
