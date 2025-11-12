@@ -34,7 +34,12 @@ export function NavUser({
     avatar: string;
   };
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const handleNavClick = () => {
+    // 모바일에서 사이드바 닫기
+    setOpenMobile(false);
+  };
 
   return (
     <SidebarMenu>
@@ -77,7 +82,7 @@ export function NavUser({
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               <Link href="/about">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleNavClick}>
                   <IconUserCircle />
                   About
                 </DropdownMenuItem>

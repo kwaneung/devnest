@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { getPostsStats } from '@/services/posts';
 
 export const metadata: Metadata = {
-  title: '소개',
+  title: 'about',
   description: '프론트엔드 개발자 김관응의 개발 여정',
 };
 
