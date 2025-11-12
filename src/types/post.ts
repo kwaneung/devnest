@@ -81,6 +81,14 @@ export function mapPostRowToPost(row: PostRow): Post {
 }
 
 /**
+ * 포스트 통계 타입
+ */
+export interface PostsStats {
+  count: number;
+  totalViews: number;
+}
+
+/**
  * Post 상수
  */
 export const POST_TITLE_MAX_LENGTH = 200;

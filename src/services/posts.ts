@@ -4,7 +4,7 @@ import { cacheTag } from 'next/cache';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 import { getCurrentKST } from '@/lib/date';
-import type { Post, GetPostsParams } from '@/types/post';
+import type { Post, GetPostsParams, PostsStats } from '@/types/post';
 import { PostSchema, mapPostRowToPost } from '@/types/post';
 
 // ==================== Queries (조회) ====================
@@ -87,6 +87,42 @@ export async function getPostById(id: number): Promise<Post | null> {
 
   // snake_case -> camelCase 변환
   return mapPostRowToPost(validatedData);
+}
+
+/**
+ * 포스트 통계를 가져오는 Server Action
+ * 포스트 개수와 총 조회수를 한 번의 쿼리로 가져옵니다.
+ *
+ * @returns 포스트 통계 (개수, 총 조회수)
+ */
+export async function getPostsStats(): Promise<PostsStats> {
+  'use cache';
+  cacheTag('posts');
+
+  console.log(`[getPostsStats] 🔥 use cache - DB 호출:`, getCurrentKST());
+
+  // 포스트 개수 조회
+  const { count, error: countError } = await supabase
+    .from('posts')
+    .select('*', { count: 'exact', head: true });
+
+  if (countError) {
+    throw new Error(`Failed to fetch posts count: ${countError.message}`);
+  }
+
+  // 총 조회수 조회
+  const { data: viewData, error: viewError } = await supabase.from('posts').select('view_count');
+
+  if (viewError) {
+    throw new Error(`Failed to fetch total views: ${viewError.message}`);
+  }
+
+  const totalViews = viewData?.reduce((sum, post) => sum + (post.view_count || 0), 0) ?? 0;
+
+  return {
+    count: count ?? 0,
+    totalViews,
+  };
 }
 
 // ==================== Actions (변경) ====================
