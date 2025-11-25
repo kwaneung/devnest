@@ -76,6 +76,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEffect } from 'react';
 
 const columns: ColumnDef<DataTableItem>[] = [
   {
@@ -230,6 +231,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -260,6 +262,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
       sorting,
       columnVisibility,
       columnFilters,
+      globalFilter,
       pagination,
     },
     meta: {
@@ -270,6 +273,7 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -278,6 +282,11 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+
+  useEffect(() => {
+    setGlobalFilter('');
+    setActiveCategory('all');
+  }, []);
 
   return (
     <Tabs
@@ -340,6 +349,14 @@ export function DataTable({ data }: { data: DataTableItem[] }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+      <div className="px-4 lg:px-6">
+        <Input
+          placeholder="Search posts..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
       {categories.map((category) => (
         <TabsContent

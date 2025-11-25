@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   ColumnDef,
@@ -184,6 +184,11 @@ export function SnippetDataTable({ data }: SnippetDataTableProps) {
       },
     },
   });
+
+  useEffect(() => {
+    setGlobalFilter('');
+    setCategory('all');
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
