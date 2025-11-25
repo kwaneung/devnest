@@ -22,6 +22,7 @@ describe('SnippetSchema', () => {
     author: 'DevNest',
     tags: ['React', 'Hooks', 'State'],
     status: 'Published',
+    view_count: 0,
     created_at: '2025-10-31T09:00:00+00:00',
     updated_at: '2025-10-31T09:00:00+00:00',
   };
@@ -246,6 +247,7 @@ describe('mapSnippetRowToSnippet', () => {
       author: 'DevNest',
       tags: ['React'],
       status: 'Published',
+      view_count: 0,
       created_at: '2025-10-31T09:00:00+00:00',
       updated_at: '2025-10-31T09:00:00+00:00',
     };
@@ -259,6 +261,7 @@ describe('mapSnippetRowToSnippet', () => {
       author: 'DevNest',
       tags: ['React'],
       status: 'Published',
+      viewCount: 0,
       createdAt: '2025-10-31T09:00:00+00:00',
       updatedAt: '2025-10-31T09:00:00+00:00',
     };
@@ -277,6 +280,7 @@ describe('mapSnippetRowToSnippet', () => {
       author: 'DevNest',
       tags: [],
       status: 'Published',
+      view_count: 0,
       created_at: '2025-10-31T09:00:00+09:00',
       updated_at: '2025-10-31T09:00:00+09:00',
     };
@@ -299,6 +303,7 @@ describe('mapSnippetRowToSnippet', () => {
       author: 'DevNest',
       tags: [],
       status: 'Published',
+      view_count: 0,
       created_at: '2025-10-31T09:00:00+00:00',
       updated_at: '2025-10-31T09:00:00+00:00',
     };

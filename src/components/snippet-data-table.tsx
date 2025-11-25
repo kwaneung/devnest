@@ -1,22 +1,62 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import Link from 'next/link';
 import {
+  IconChevronDown,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconDotsVertical,
+  IconLayoutColumns,
+} from '@tabler/icons-react';
+import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
 
-import type { Snippet } from '@/types/snippet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { SnippetDataTableItem } from './snippet-data-table.types';
 import { SUPPORTED_LANGUAGES } from '@/types/snippet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -25,206 +65,270 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEffect } from 'react';
 
-// 언어 카테고리
+const columns: ColumnDef<SnippetDataTableItem>[] = [
+  {
+    accessorKey: 'title',
+    header: 'Title',
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`/snippets/${row.original.id}`}
+          className="font-medium hover:text-primary hover:underline"
+        >
+          {row.original.title}
+        </Link>
+      );
+    },
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'language',
+    header: 'Language',
+    cell: ({ row }) => {
+      const languageInfo = SUPPORTED_LANGUAGES.find((lang) => lang.value === row.original.language);
+      return (
+        <Badge variant="outline" className="text-muted-foreground px-1.5">
+          {languageInfo?.icon} {languageInfo?.label || row.original.language}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'tags',
+    header: 'Tags',
+    cell: ({ row }) => (
+      <div className="flex flex-wrap gap-1">
+        {row.original.tags.slice(0, 3).map((tag) => (
+          <Badge key={tag} variant="outline" className="text-muted-foreground px-1.5">
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: () => <div className="w-full text-right">Published</div>,
+    cell: ({ row }) => {
+      const formattedDate = new Date(row.original.createdAt).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      return <div className="text-right text-sm">{formattedDate}</div>;
+    },
+  },
+  {
+    accessorKey: 'viewCount',
+    header: () => <div className="w-full text-right">Views</div>,
+    cell: ({ row }) => (
+      <div className="text-right text-sm">{row.original.viewCount.toLocaleString()}</div>
+    ),
+  },
+  {
+    accessorKey: 'author',
+    header: 'Author',
+    cell: ({ row }) => {
+      return <div className="text-sm">{row.original.author}</div>;
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row, table }) => {
+      const { setSelectedItem, setIsDrawerOpen } = table.options.meta as any;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onClick={() => {
+                setSelectedItem(row.original);
+                setIsDrawerOpen(true);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+            <DropdownMenuItem>Favorite</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+// Category configuration
 const categories = [
   {
     value: 'all',
-    label: 'All',
+    label: 'All Snippets',
     filter: () => true,
   },
   {
     value: 'typescript',
     label: 'TypeScript',
-    filter: (item: Snippet) => item.language === 'typescript',
+    filter: (item: SnippetDataTableItem) => item.language === 'typescript',
   },
   {
     value: 'javascript',
     label: 'JavaScript',
-    filter: (item: Snippet) => item.language === 'javascript',
+    filter: (item: SnippetDataTableItem) => item.language === 'javascript',
   },
   {
     value: 'python',
     label: 'Python',
-    filter: (item: Snippet) => item.language === 'python',
+    filter: (item: SnippetDataTableItem) => item.language === 'python',
   },
   {
     value: 'go',
     label: 'Go',
-    filter: (item: Snippet) => item.language === 'go',
+    filter: (item: SnippetDataTableItem) => item.language === 'go',
   },
   {
     value: 'rust',
     label: 'Rust',
-    filter: (item: Snippet) => item.language === 'rust',
+    filter: (item: SnippetDataTableItem) => item.language === 'rust',
   },
 ];
 
-interface SnippetDataTableProps {
-  data: Snippet[];
-}
+export function SnippetDataTable({ data }: { data: SnippetDataTableItem[] }) {
+  const [activeCategory, setActiveCategory] = React.useState('all');
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [selectedItem, setSelectedItem] = React.useState<SnippetDataTableItem | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
-export function SnippetDataTable({ data }: SnippetDataTableProps) {
-  const [category, setCategory] = useState('all');
-  const [globalFilter, setGlobalFilter] = useState('');
+  // Filter data based on active category
+  const filteredData = React.useMemo(() => {
+    const category = categories.find((cat) => cat.value === activeCategory);
+    if (!category) return data;
+    return data.filter(category.filter);
+  }, [data, activeCategory]);
 
-  // 카테고리별 개수 계산
-  const categoryCounts = useMemo(() => {
+  // Calculate counts for each category
+  const categoryCounts = React.useMemo(() => {
     const counts: Record<string, number> = {};
-    categories.forEach((cat) => {
-      counts[cat.value] = data.filter(cat.filter).length;
+    categories.forEach((category) => {
+      counts[category.value] = data.filter(category.filter).length;
     });
     return counts;
   }, [data]);
-
-  // 카테고리 필터링
-  const filteredData = useMemo(() => {
-    const categoryFilter = categories.find((c) => c.value === category);
-    if (!categoryFilter) return data;
-    return data.filter(categoryFilter.filter);
-  }, [data, category]);
-
-  // 테이블 컬럼 정의
-  const columns: ColumnDef<Snippet>[] = [
-    {
-      accessorKey: 'title',
-      header: 'Title',
-      cell: ({ row }) => {
-        const languageInfo = SUPPORTED_LANGUAGES.find(
-          (lang) => lang.value === row.original.language,
-        );
-        const icon = languageInfo?.icon || '📄';
-
-        return (
-          <Link
-            href={`/snippets/${row.original.id}`}
-            className="flex items-center gap-2 font-medium hover:text-primary"
-          >
-            <span className="text-xl">{icon}</span>
-            <span>{row.original.title}</span>
-          </Link>
-        );
-      },
-    },
-    {
-      accessorKey: 'language',
-      header: 'Language',
-      cell: ({ row }) => {
-        const languageInfo = SUPPORTED_LANGUAGES.find(
-          (lang) => lang.value === row.original.language,
-        );
-        return <Badge variant="outline">{languageInfo?.label || row.original.language}</Badge>;
-      },
-    },
-    {
-      accessorKey: 'tags',
-      header: 'Tags',
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.tags.slice(0, 2).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {row.original.tags.length > 2 && (
-            <Badge variant="secondary" className="text-xs">
-              +{row.original.tags.length - 2}
-            </Badge>
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'createdAt',
-      header: 'Created',
-      cell: ({ row }) => {
-        const date = new Date(row.original.createdAt);
-        return (
-          <span className="text-sm text-muted-foreground">
-            {date.toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: 'author',
-      header: 'Author',
-      cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">{row.original.author}</span>
-      ),
-    },
-  ];
 
   const table = useReactTable({
     data: filteredData,
     columns,
     state: {
+      sorting,
+      columnVisibility,
+      columnFilters,
       globalFilter,
+      pagination,
     },
+    meta: {
+      setSelectedItem,
+      setIsDrawerOpen,
+    },
+    getRowId: (row) => row.id.toString(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
   useEffect(() => {
     setGlobalFilter('');
-    setCategory('all');
+    setActiveCategory('all');
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 카테고리 탭 - Desktop */}
-      <div className="hidden md:block px-4 lg:px-6">
-        <Tabs value={category} onValueChange={setCategory}>
-          <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1">
-            {categories.map((cat) => (
-              <TabsTrigger key={cat.value} value={cat.value}>
-                {cat.label}
-                {categoryCounts[cat.value] > 0 && (
-                  <Badge variant="secondary">{categoryCounts[cat.value]}</Badge>
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
-
-      {/* 카테고리 Select - Mobile */}
-      <div className="md:hidden px-4 lg:px-6">
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger>
-            <SelectValue />
+    <Tabs
+      value={activeCategory}
+      onValueChange={setActiveCategory}
+      className="w-full flex-col justify-start gap-6"
+    >
+      <div className="flex items-center justify-between px-4 lg:px-6">
+        <Label htmlFor="view-selector" className="sr-only">
+          View
+        </Label>
+        <Select value={activeCategory} onValueChange={setActiveCategory}>
+          <SelectTrigger className="flex w-fit @4xl/main:hidden" size="sm" id="view-selector">
+            <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.label} ({categoryCounts[cat.value]})
+            {categories.map((category) => (
+              <SelectItem key={category.value} value={category.value}>
+                {category.label} ({categoryCounts[category.value]})
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
+          {categories.map((category) => (
+            <TabsTrigger key={category.value} value={category.value}>
+              {category.label}
+              {categoryCounts[category.value] > 0 && (
+                <Badge variant="secondary">{categoryCounts[category.value]}</Badge>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <div className="hidden items-center gap-2 md:flex">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <IconLayoutColumns />
+                <span className="hidden lg:inline">Customize Columns</span>
+                <span className="lg:hidden">Columns</span>
+                <IconChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {table
+                .getAllColumns()
+                .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-
-      {/* 검색 */}
       <div className="px-4 lg:px-6">
         <Input
           placeholder="Search snippets..."
@@ -233,74 +337,344 @@ export function SnippetDataTable({ data }: SnippetDataTableProps) {
           className="max-w-sm"
         />
       </div>
-
-      {/* 테이블 */}
-      <div className="px-4 lg:px-6">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
+      {categories.map((category) => (
+        <TabsContent
+          key={category.value}
+          value={category.value}
+          className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+        >
+          <div className="overflow-hidden rounded-lg border [&_[data-slot=table-container]]:overflow-x-hidden md:[&_[data-slot=table-container]]:overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-muted sticky top-0 z-10 hidden md:table-header-group">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                      {/* Desktop view: 기존 테이블 레이아웃 */}
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block font-medium hover:text-primary hover:underline"
+                        >
+                          {row.original.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <Badge variant="outline" className="text-muted-foreground px-1.5">
+                            {
+                              SUPPORTED_LANGUAGES.find(
+                                (lang) => lang.value === row.original.language,
+                              )?.icon
+                            }{' '}
+                            {SUPPORTED_LANGUAGES.find(
+                              (lang) => lang.value === row.original.language,
+                            )?.label || row.original.language}
+                          </Badge>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="flex flex-wrap gap-1">
+                            {row.original.tags.slice(0, 3).map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="text-muted-foreground px-1.5"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-right text-sm">
+                            {new Date(row.original.createdAt).toLocaleDateString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                            })}
+                          </div>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-right text-sm">
+                            {row.original.viewCount.toLocaleString()}
+                          </div>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="block hover:opacity-80 transition-opacity"
+                        >
+                          <div className="text-sm">{row.original.author}</div>
+                        </Link>
+                      </TableCell>
+                      <TableCell
+                        className="hidden md:table-cell"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                              size="icon"
+                            >
+                              <IconDotsVertical />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-32">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedItem(row.original);
+                                setIsDrawerOpen(true);
+                              }}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+                            <DropdownMenuItem>Favorite</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
 
-      {/* 페이지네이션 */}
-      <div className="flex items-center justify-between px-4 lg:px-6">
-        <div className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} snippet(s)
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <div className="text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                      {/* Mobile view: 카드 레이아웃 */}
+                      <TableCell className="max-w-0 md:hidden" colSpan={columns.length}>
+                        <Link
+                          href={`/snippets/${row.original.id}`}
+                          className="flex flex-col gap-2 p-2 hover:bg-muted/50 transition-colors"
+                        >
+                          {/* 상단 영역: title */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1 truncate font-medium">
+                              {row.original.title}
+                            </div>
+                          </div>
+
+                          {/* 하단 영역: author, published, views */}
+                          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                            <span>{row.original.author}</span>
+                            <span>•</span>
+                            <span>
+                              {new Date(row.original.createdAt).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                              })}
+                            </span>
+                            <span>•</span>
+                            <span>{row.original.viewCount.toLocaleString()} views</span>
+                          </div>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          <div className="flex items-center justify-between px-4">
+            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+              {table.getFilteredRowModel().rows.length} snippets
+            </div>
+            <div className="flex w-full items-center gap-8 lg:w-fit">
+              <div className="hidden items-center gap-2 lg:flex">
+                <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                  Rows per page
+                </Label>
+                <Select
+                  value={`${table.getState().pagination.pageSize}`}
+                  onValueChange={(value) => {
+                    table.setPageSize(Number(value));
+                  }}
+                >
+                  <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                  </SelectTrigger>
+                  <SelectContent side="top">
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
+                      <SelectItem key={pageSize} value={`${pageSize}`}>
+                        {pageSize}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex w-fit items-center justify-center text-sm font-medium">
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              </div>
+              <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                <Button
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to first page</span>
+                  <IconChevronsLeft />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to previous page</span>
+                  <IconChevronLeft />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to next page</span>
+                  <IconChevronRight />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="hidden size-8 lg:flex"
+                  size="icon"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to last page</span>
+                  <IconChevronsRight />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      ))}
+
+      {/* Edit Drawer */}
+      <EditDrawer item={selectedItem} open={isDrawerOpen} onOpenChange={setIsDrawerOpen} />
+    </Tabs>
+  );
+}
+
+function EditDrawer({
+  item,
+  open,
+  onOpenChange,
+}: {
+  item: SnippetDataTableItem | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const isMobile = useIsMobile();
+
+  if (!item) return null;
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange} direction={isMobile ? 'bottom' : 'right'}>
+      <DrawerContent>
+        <DrawerHeader className="gap-1">
+          <DrawerTitle>{item.title}</DrawerTitle>
+          <DrawerDescription>Snippet details and statistics</DrawerDescription>
+        </DrawerHeader>
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+          <form className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" defaultValue={item.title} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="author">Author</Label>
+                <Input id="author" defaultValue={item.author} />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="language">Language</Label>
+                <Select defaultValue={item.language}>
+                  <SelectTrigger id="language" className="w-full">
+                    <SelectValue placeholder="Select a language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <SelectItem key={lang.value} value={lang.value}>
+                        {lang.icon} {lang.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="createdAt">Created Date</Label>
+                <Input
+                  id="createdAt"
+                  type="date"
+                  defaultValue={new Date(item.createdAt).toISOString().split('T')[0]}
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="viewCount">View Count</Label>
+                <Input id="viewCount" type="number" defaultValue={item.viewCount} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="tags">Tags</Label>
+              <Input
+                id="tags"
+                defaultValue={item.tags.join(', ')}
+                placeholder="React, TypeScript, Hooks"
+              />
+            </div>
+          </form>
         </div>
-      </div>
-    </div>
+        <DrawerFooter>
+          <Button>Submit</Button>
+          <DrawerClose asChild>
+            <Button variant="outline">Done</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

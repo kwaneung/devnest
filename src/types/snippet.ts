@@ -21,6 +21,7 @@ export const SnippetSchema = z.object({
   author: z.string().min(1, '작성자는 필수입니다'),
   tags: z.array(z.string()).default([]),
   status: z.enum(['Published', 'Draft', 'Archived']).default('Published'),
+  view_count: z.number().int().nonnegative().default(0),
   created_at: z.iso.datetime({ offset: true }),
   updated_at: z.iso.datetime({ offset: true }),
 });
@@ -45,6 +46,7 @@ export interface Snippet {
   author: string;
   tags: string[];
   status: 'Published' | 'Draft' | 'Archived';
+  viewCount: number;
   createdAt: string; // ISO 8601 with timezone offset (예: "2025-10-01T09:00:00+00:00")
   updatedAt: string; // ISO 8601 with timezone offset
 }
@@ -77,6 +79,7 @@ export function mapSnippetRowToSnippet(row: SnippetRow): Snippet {
     author: row.author,
     tags: row.tags,
     status: row.status,
+    viewCount: row.view_count,
     createdAt: row.created_at, // 이미 ISO 8601 문자열
     updatedAt: row.updated_at, // 이미 ISO 8601 문자열
   };

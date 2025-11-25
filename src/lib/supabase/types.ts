@@ -62,6 +62,7 @@ export type Database = {
           tags: string[] | null;
           title: string;
           updated_at: string | null;
+          view_count: number;
         };
         Insert: {
           author?: string;
@@ -74,6 +75,7 @@ export type Database = {
           tags?: string[] | null;
           title: string;
           updated_at?: string | null;
+          view_count?: number;
         };
         Update: {
           author?: string;
@@ -86,6 +88,7 @@ export type Database = {
           tags?: string[] | null;
           title?: string;
           updated_at?: string | null;
+          view_count?: number;
         };
         Relationships: [];
       };
