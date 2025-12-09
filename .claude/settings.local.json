@@ -9,7 +9,8 @@
       "Bash(pnpm type-check:*)",
       "Bash(pnpm dlx shadcn@latest add:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm supabase:gen-types:*)"
+      "Bash(pnpm supabase:gen-types:*)",
+      "Bash(pnpm test:*)"
     ],
     "deny": [],
     "ask": []
