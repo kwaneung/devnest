@@ -1,27 +1,3 @@
-# GitHub About (레포 설정에 붙여넣기)
-
-**Description**
-
-```
-Next.js 16 + Supabase 개발 블로그·코드 스니펫 대시보드. Server Actions, Cache Components, SSG 실험.
-```
-
-**Website**
-
-```
-https://devnest-orcin.vercel.app
-```
-
-**Topics (제안)**
-
-```
-nextjs react typescript supabase tailwindcss shadcn-ui vitest playwright blog dashboard
-```
-
----
-
-# README.md (레포 루트용)
-
 # DevNest
 
 Next.js 16(App Router) 기반 **개발 블로그·스니펫 허브**입니다. Supabase(Postgres)에서 글·스니펫을 읽고, shadcn/ui 사이드바 대시보드로 목록·상세를 제공합니다. **blog-it** 이후 스택을 올리며 Server Actions, Cache Components, 빌드 타임 SSG를 실험한 제품형 레포입니다.
